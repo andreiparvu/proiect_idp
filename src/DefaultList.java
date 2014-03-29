@@ -3,7 +3,9 @@ import javax.swing.JList;
 
 
 public abstract class DefaultList extends JList<String> {
-  DefaultListModel<String> model;
+	private static final long serialVersionUID = 8488210035925008474L;
+	
+	DefaultListModel<String> model;
   
   DefaultList(DefaultListModel<String> model) {
     super(model);

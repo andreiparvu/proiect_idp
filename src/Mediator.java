@@ -1,4 +1,3 @@
-import java.nio.file.Files;
 import java.util.ArrayList;
 
 import javax.swing.JTextArea;
