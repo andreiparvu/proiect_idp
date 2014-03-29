@@ -84,9 +84,6 @@ public class MainWindow extends JFrame {
 		userList = new UserList(mediator, new DefaultListModel<String>()); //new JList<String>(users);
 		JScrollPane userScrollPane = new JScrollPane(userList);
 
-		// Create a regular old label
-		label = new JLabel("Click on an image name in the list.", JLabel.CENTER);
-
 		// Create a split pane and put "top" (a split pane)
 		// and JLabel instance in it.
 		String[] columnNames = {"Source", "Destination", "File Name", "Progress", "Status"};
