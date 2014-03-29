@@ -2,13 +2,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 
-public class WebService {
+public class WebServiceClient {
   Mediator med;
   
-  public WebService(Mediator med) {
+  public WebServiceClient(Mediator med) {
     this.med = med;
     
-    med.registerWebService(this);
+    med.registerWebServiceClient(this);
   }
   
   public ArrayList<String> getFilesFromUser(String userName) {
@@ -29,5 +29,9 @@ public class WebService {
     }
     
     return new ArrayList<String>(Arrays.asList(files));
+  }
+  
+  public void receivedPartOfFile(String file) {
+    med.addFilePart(file, 10);
   }
 }

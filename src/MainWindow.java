@@ -59,7 +59,7 @@ public class MainWindow extends JFrame {
 	
 	private JList<String> userList;
 
-	private WebService webService;
+	private WebServiceClient webServiceClient;
 	private JLabel label;
 	
 	class MyTableModel extends DefaultTableModel {
@@ -75,7 +75,7 @@ public class MainWindow extends JFrame {
 	
 	public MainWindow() {
 	  mediator = new Mediator();
-	  webService = new WebService(mediator);
+	  webServiceClient = new WebServiceClient(mediator);
 	  
 	  fileList = new FileList(mediator, new DefaultListModel<String>());
 	  
@@ -152,6 +152,9 @@ public class MainWindow extends JFrame {
            case "all":
              frame.mediator.addUser("andrei");
              frame.mediator.addUser("daniel");
+             break;
+           case "add_part":
+             frame.mediator.addFilePart(st.nextToken(), 10);
              break;
          }
          
