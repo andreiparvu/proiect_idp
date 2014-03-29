@@ -36,7 +36,6 @@ import java.util.StringTokenizer;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -60,7 +59,6 @@ public class MainWindow extends JFrame {
 	private JList<String> userList;
 
 	private WebService webService;
-	private JLabel label;
 	
 	class MyTableModel extends DefaultTableModel {
 	  
@@ -83,9 +81,6 @@ public class MainWindow extends JFrame {
 		
 		userList = new UserList(mediator, new DefaultListModel<String>()); //new JList<String>(users);
 		JScrollPane userScrollPane = new JScrollPane(userList);
-
-		// Create a regular old label
-		label = new JLabel("Click on an image name in the list.", JLabel.CENTER);
 
 		// Create a split pane and put "top" (a split pane)
 		// and JLabel instance in it.
