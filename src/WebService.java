@@ -7,8 +7,6 @@ public class WebService {
   
   public WebService(Mediator med) {
     this.med = med;
-    
-    med.registerWebService(this);
   }
   
   public ArrayList<String> getFilesFromUser(String userName) {

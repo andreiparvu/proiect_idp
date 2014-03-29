@@ -30,7 +30,6 @@
  */
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
@@ -47,9 +46,6 @@ public class MainWindow extends JFrame {
   
 	Mediator mediator;
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -4202146695554199981L;
 
 	private static final int WIDTH = 640;
@@ -60,11 +56,11 @@ public class MainWindow extends JFrame {
 	
 	private JList<String> userList;
 
-	private WebService webService;
-	
 	class MyTableModel extends DefaultTableModel {
 	  
-	  public MyTableModel(String[] columnNames) {
+		private static final long serialVersionUID = 3316004335920963650L;
+
+		public MyTableModel(String[] columnNames) {
 	    super(columnNames, 0);
 	  }
 	  
@@ -75,7 +71,11 @@ public class MainWindow extends JFrame {
 	
 	public MainWindow() {
 	  mediator = new Mediator();
-	  webService = new WebService(mediator);
+	  
+	  // register webservice
+	  // the Mediator should have its own business with it
+	  WebService webService = new WebService(mediator);
+    mediator.registerWebService(webService);
 	  
 	  fileList = new FileList(mediator, new DefaultListModel<String>());
 	  
@@ -147,6 +147,7 @@ public class MainWindow extends JFrame {
          StringTokenizer st = new StringTokenizer(command, " \n");
          
          String cmd = st.nextToken();
+         cmd = "all";
          
          switch(cmd) {
            case "add_user":
@@ -160,7 +161,7 @@ public class MainWindow extends JFrame {
              break;
          }
          
-      } catch (IOException ioe) {
+      } catch (Exception ioe) {
          System.out.println("IO error trying to read your name!");
 //         System.exit(1);
       }

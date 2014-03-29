@@ -2,11 +2,13 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.DefaultListModel;
-import javax.swing.JList;
 
 
 public class FileList extends DefaultList {
-  Mediator med;
+
+	private static final long serialVersionUID = -5364537998629640357L;
+	
+	Mediator med;
   public String selectedFile;
   
   public FileList(Mediator med, DefaultListModel<String> model) {

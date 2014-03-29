@@ -36,6 +36,7 @@ public class Mediator {
 	
 	public void registerStatusArea(JTextArea textArea) {
 		statusText = textArea;
+		statusText.setFocusable(false);
 		updateStatus();
 	}
 	

@@ -5,9 +5,7 @@ import javax.swing.DefaultListModel;
 
 
 public class UserList extends DefaultList {
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 379567853482462427L;
 	
 	Mediator med;
