@@ -35,6 +35,7 @@ import java.util.StringTokenizer;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -74,10 +75,10 @@ public class MainWindow extends JFrame {
 	  
 	  // register webservice
 	  // the Mediator should have its own business with it
-	  WebService webService = new WebService(mediator);
-    mediator.registerWebService(webService);
-	  
-	  fileList = new FileList(mediator, new DefaultListModel<String>());
+	  WebServiceClient webServiceClient = new WebServiceClient(mediator);
+    mediator.registerWebServiceClient(webServiceClient);
+
+    fileList = new FileList(mediator, new DefaultListModel<String>());
 	  
 		JScrollPane fileListScrollPane = new JScrollPane(fileList);
 		
@@ -158,6 +159,9 @@ public class MainWindow extends JFrame {
            case "all":
              frame.mediator.addUser("andrei");
              frame.mediator.addUser("daniel");
+             break;
+           case "add_part":
+             frame.mediator.addFilePart(st.nextToken(), 10);
              break;
          }
          

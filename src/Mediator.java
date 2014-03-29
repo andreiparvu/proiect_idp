@@ -1,3 +1,4 @@
+import java.nio.file.Files;
 import java.util.ArrayList;
 
 import javax.swing.JTextArea;
@@ -6,7 +7,7 @@ import javax.swing.JTextArea;
 public class Mediator {
 	UserList userList;
 	FileList fileList;
-	WebService webService;
+	WebServiceClient webServiceClient;
 	EventTable eventTable;
 	JTextArea statusText;
 	
@@ -26,8 +27,8 @@ public class Mediator {
 	  this.fileList = fileList;
 	}
 	
-	public void registerWebService(WebService webService) {
-	  this.webService = webService;
+	public void registerWebServiceClient(WebServiceClient webServiceClient) {
+	  this.webServiceClient = webServiceClient;
 	}
 	
 	public void registerEventTable(EventTable eventTable) {
@@ -49,7 +50,7 @@ public class Mediator {
 	}
 	
 	public void showFiles(String userName) {
-	  ArrayList<String> files = this.webService.getFilesFromUser(userName);
+	  ArrayList<String> files = this.webServiceClient.getFilesFromUser(userName);
 	  
 	  fileList.removeElements();
 	  
@@ -77,5 +78,9 @@ public class Mediator {
 				+ " from " + this.userList.selectedUser);
 	  eventTable.addEntry(this.userList.selectedUser, this.fileList.selectedFile,
 	      true);
+	}
+	
+	public void addFilePart(String name, int quantity) {
+	  eventTable.updateProgressBar(name, quantity);
 	}
 }
