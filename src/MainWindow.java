@@ -39,6 +39,7 @@ import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTextArea;
 import javax.swing.table.DefaultTableModel;
 
 public class MainWindow extends JFrame {
@@ -53,6 +54,7 @@ public class MainWindow extends JFrame {
 
 	private static final int WIDTH = 640;
 	private static final int HEIGHT = 480;
+	private static final int STATUS_HEIGHT = 60;
 	
 	private JList<String> fileList;
 	
@@ -79,7 +81,7 @@ public class MainWindow extends JFrame {
 	  
 		JScrollPane fileListScrollPane = new JScrollPane(fileList);
 		
-		userList = new UserList(mediator, new DefaultListModel<String>()); //new JList<String>(users);
+		userList = new UserList(mediator, new DefaultListModel<String>()); 
 		JScrollPane userScrollPane = new JScrollPane(userList);
 
 		// Create a split pane and put "top" (a split pane)
@@ -100,8 +102,16 @@ public class MainWindow extends JFrame {
 		horizontalSplitPane.setOneTouchExpandable(true);
 		horizontalSplitPane.setDividerLocation(WIDTH * 3/4);
 
+		
+		JTextArea statusText = new JTextArea();
+		mediator.registerStatusArea(statusText);
+		
+		JSplitPane superSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, horizontalSplitPane, statusText);
+		superSplitPane.setDividerLocation(HEIGHT - STATUS_HEIGHT);
+		superSplitPane.setDividerSize(0);
+		
 		// Add the split pane to this frame
-		getContentPane().add(horizontalSplitPane);
+		getContentPane().add(superSplitPane);
 	}
 
 	private static void createAndShowGUI() {

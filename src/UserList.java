@@ -2,10 +2,14 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.DefaultListModel;
-import javax.swing.JList;
 
 
 public class UserList extends DefaultList {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 379567853482462427L;
+	
 	Mediator med;
 	public String selectedUser;
 	
@@ -27,9 +31,10 @@ public class UserList extends DefaultList {
       
       if (index != lastClicked) {
         selectedUser = model.elementAt(index);
-        med.showFiles(model.elementAt(index));
+        // get files from webservice/mediator
+        med.showFiles(selectedUser);
+        med.setStatus(Mediator.GETING_FILES_FROM, selectedUser);
       }
     }
   }
-  
 }

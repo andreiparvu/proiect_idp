@@ -1,11 +1,19 @@
 import java.util.ArrayList;
 
+import javax.swing.JTextArea;
+
 
 public class Mediator {
 	UserList userList;
 	FileList fileList;
 	WebService webService;
 	EventTable eventTable;
+	JTextArea statusText;
+	
+	public static final String GETING_FILES_FROM = "Getting files from ";
+	public static final String DOWNLOADING_FILE = "Downloading file ";
+	
+	private String status = "morti";
 	
 	public Mediator() {
 	}
@@ -26,6 +34,11 @@ public class Mediator {
 	  this.eventTable = eventTable;
 	}
 	
+	public void registerStatusArea(JTextArea textArea) {
+		statusText = textArea;
+		updateStatus();
+	}
+	
 	public void addUser(String userName) {
 	  this.userList.addElement(userName);
 	}
@@ -44,7 +57,23 @@ public class Mediator {
 	  }
 	}
 	
+	public String getStatus() {
+		return "morti";
+	}
+	
+	public void setStatus(String genericMessage, String subject) {
+		status = genericMessage + subject;
+		updateStatus();
+	}
+	
+	private void updateStatus() {
+		if (statusText != null)
+			statusText.setText(status);
+	}
+	
 	public void startDownload() {
+		setStatus(DOWNLOADING_FILE, "\"" + this.fileList.selectedFile + "\"" 
+				+ " from " + this.userList.selectedUser);
 	  eventTable.addEntry(this.userList.selectedUser, this.fileList.selectedFile,
 	      true);
 	}
