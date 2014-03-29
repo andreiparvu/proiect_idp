@@ -29,15 +29,22 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.StringTokenizer;
+
+import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.ListSelectionModel;
+import javax.swing.table.DefaultTableModel;
 
 public class MainWindow extends JFrame {
-
+  static MainWindow frame;
+  
 	Mediator mediator;
 	
 	/**
@@ -50,25 +57,31 @@ public class MainWindow extends JFrame {
 	
 	private JList<String> fileList;
 	
-	private String[] imageNames = { "Bird", "Cat", "Dog"};
-	private String[] users = { "Jeg", "Dobitoc" };
-
 	private JList<String> userList;
 
+	private WebService webService;
 	private JLabel label;
-
+	
+	class MyTableModel extends DefaultTableModel {
+	  
+	  public MyTableModel(String[] columnNames) {
+	    super(columnNames, 0);
+	  }
+	  
+	  public boolean isCellEditable(int row, int column) {
+	    return false;
+	  }
+	}
+	
 	public MainWindow() {
-		
-		fileList = new JList<String>(imageNames);
-		fileList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		fileList.setSelectedIndex(0);
-//		fileList.addListSelectionListener(this); // ? nu chiar asa
+	  mediator = new Mediator();
+	  webService = new WebService(mediator);
+	  
+	  fileList = new FileList(mediator, new DefaultListModel<String>());
+	  
 		JScrollPane fileListScrollPane = new JScrollPane(fileList);
 		
-		userList = new JList<String>(users);
-		fileList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		fileList.setSelectedIndex(0);
-//		fileList.addListSelectionListener(this); // ? nu chiar asa
+		userList = new UserList(mediator, new DefaultListModel<String>()); //new JList<String>(users);
 		JScrollPane userScrollPane = new JScrollPane(userList);
 
 		// Create a regular old label
@@ -76,7 +89,12 @@ public class MainWindow extends JFrame {
 
 		// Create a split pane and put "top" (a split pane)
 		// and JLabel instance in it.
-		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, fileListScrollPane, label);
+		String[] columnNames = {"Source", "Destination", "File Name", "Progress", "Status"};
+		
+		EventTable t = new EventTable(mediator, new MyTableModel(columnNames));
+		JScrollPane p = new JScrollPane(t);
+		
+		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, fileListScrollPane, p);
 		splitPane.setOneTouchExpandable(true);
 		splitPane.setDividerLocation(180);
 		splitPane.setBorder(null);
@@ -93,7 +111,7 @@ public class MainWindow extends JFrame {
 
 	private static void createAndShowGUI() {
 		// Create and set up the window.
-		JFrame frame = new MainWindow();
+		frame = new MainWindow();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		// Display the window.
@@ -111,5 +129,36 @@ public class MainWindow extends JFrame {
 				createAndShowGUI();
 			}
 		});
+		
+		while (true) {
+		  BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+      String command = null;
+
+      //  read the username from the command-line; need to use try/catch with the
+      //  readLine() method
+      try {
+         command = br.readLine();
+         StringTokenizer st = new StringTokenizer(command, " \n");
+         
+         String cmd = st.nextToken();
+         
+         switch(cmd) {
+           case "add_user":
+             frame.mediator.addUser(st.nextToken());
+             break;
+           case "rm_user":
+             frame.mediator.delUser(st.nextToken());
+           case "all":
+             frame.mediator.addUser("andrei");
+             frame.mediator.addUser("daniel");
+             break;
+         }
+         
+      } catch (IOException ioe) {
+         System.out.println("IO error trying to read your name!");
+//         System.exit(1);
+      }
+		}
 	}
 }
