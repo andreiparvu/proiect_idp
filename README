@@ -1,0 +1,23 @@
+CodeInChains (Andrei Parvu & Daniel Ciocirlan, 341C3)
+
+1. Detalii de implementare
+
+	---- Tema1:
+	
+	Am urmarit arhitectura sugerata de enunt. Astfel, avem componentele centrale
+	cerute de specificatii, avand in vedere stadiul proiectului: Mediator, GUI,
+	WebServiceClient.
+	
+	Mediatorul este cel responsabil de datele disponibile ale aplicatiei si de 
+	asocierile aferente (utilizatori-fisiere-stadiu de descarcare/incarcare etc).
+	Tot mediatorul este cel care controleaza interfata cu utilizatorul.
+	
+	WebServiceClient este raspunzator de aportul de date. Deocamdata, "aduce"
+	(in mod mock/simulat) lista de fisiere ceruta pentru utilzatorul respectiv.
+	
+	Descarcarea fisierelor se face tot simulat, prin thread-uri.
+	
+	Interfata cu utilizatorul arata asemanator cu cea sugerata de enuntul temei,
+	cu toate componentele necesare separate prin despartitoare: lista de useri, 
+	lista de fisiere, tabelul cu descarcari+progressbar-uri, status-label-ul de
+	jos etc.
