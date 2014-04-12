@@ -5,6 +5,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import main.Mediator;
+
 import org.yaml.snakeyaml.Yaml;
 
 public class EchoWorker implements IWorker {
@@ -12,10 +14,11 @@ public class EchoWorker implements IWorker {
 	private List<ServerDataEvent> queue = new LinkedList<ServerDataEvent>();
 	private Map <SocketChannel, StringBuffer> buffers = new HashMap<SocketChannel, StringBuffer>();
 	private NioServer master;
-
+	private Mediator med;
+	
 	// at construction phase
-	public EchoWorker() {
-		
+	public EchoWorker(Mediator med) {
+		this.med = med;
 	}
 	
 	public void processData(NioServer server, SocketChannel socket, byte[] data, int count) {
@@ -164,6 +167,11 @@ public class EchoWorker implements IWorker {
 		
 		synchronized (owner.fileContents) {
 			owner.fileContents.get(message.filename).storeData(message.chunkIndex, message.data);
+			
+			FileData fd = owner.fileContents.get(message.filename);
+			
+			System.out.println("plm " + (float)fd.fd.chunkSize * 100 / fd.fd.totalSize);
+			med.addFilePart(message.filename, (float)fd.fd.chunkSize * 100 / fd.fd.totalSize);
 		}
 	}
 }

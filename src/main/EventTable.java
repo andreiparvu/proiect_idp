@@ -1,3 +1,4 @@
+package main;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,6 +17,7 @@ public class EventTable extends JTable {
   DefaultTableModel model;
   Mediator med;
   ArrayList<JProgressBar> progressBars;
+  ArrayList<Float> progressBarValues;
   HashMap<String, Integer> allFiles;
   ArrayList<Object[]> allData;
 
@@ -28,6 +30,7 @@ public class EventTable extends JTable {
     med.registerEventTable(this);
 
     progressBars = new ArrayList<>();
+    progressBarValues = new ArrayList<>();
     allFiles = new HashMap<>();
     allData = new ArrayList<>();
 
@@ -84,6 +87,7 @@ public class EventTable extends JTable {
     }
 
     progressBars.add(progressBar);
+    progressBarValues.add(0f);
 
     Object[] rowData = {from, to, file, progressBar, status};
     model.addRow(rowData);
@@ -93,35 +97,42 @@ public class EventTable extends JTable {
 
     // mock a download
     // might want a separate class for this
-    new Thread(new Runnable() {
-
-      @Override
-      public void run() {
-        String filename = med.fileList.selectedFile;
-        while(getProgress(filename) < 100) {
-          try {
-            synchronized (EventTable.this) {
-              EventTable.this.updateProgressBar(filename, 10);
-            }
-            Thread.sleep(1000);
-          } catch (InterruptedException e) {
-            e.printStackTrace();
-          }
-        }
-      }
-    }).start();
+//    new Thread(new Runnable() {
+//
+//      @Override
+//      public void run() {
+//        String filename = med.fileList.selectedFile;
+//        while(getProgress(filename) < 100) {
+//          try {
+//            synchronized (EventTable.this) {
+//              EventTable.this.updateProgressBar(filename, 10);
+//            }
+//            Thread.sleep(1000);
+//          } catch (InterruptedException e) {
+//            e.printStackTrace();
+//          }
+//        }
+//      }
+//    }).start();
   }
 
-  public void updateProgressBar(String file, int part) {
+  public void updateProgressBar(String file, float part) {
     int index = allFiles.get(file);
     JProgressBar progressBar = progressBars.get(index);
 
     // Increase the value of the progress bar
-    int oldValue = progressBar.getValue();
-
-    progressBar.setValue(oldValue + part);
-    progressBar.setString(oldValue + part + "%");
-    if (oldValue + part == 100) {
+    float oldValue = progressBarValues.get(index);
+    
+    float newValue = oldValue + part;
+    if (newValue > 100) {
+    	newValue = 100;
+    }
+    
+    progressBarValues.set(index, newValue);
+    
+    progressBar.setValue((int)newValue);
+    progressBar.setString((int)newValue + "%");
+    if (newValue == 100) {
       // Change state if completed
       model.setValueAt("Completed.", index, 4);
     }

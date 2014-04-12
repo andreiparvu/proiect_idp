@@ -15,6 +15,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import main.Mediator;
+
 import org.yaml.snakeyaml.Yaml;
 
 public class NioServer implements Runnable {
@@ -40,8 +42,8 @@ public class NioServer implements Runnable {
 	// Maps a SocketChannel to a list of ByteBuffer instances
 	Map<SocketChannel, List<ByteBuffer>> pendingData = new HashMap<SocketChannel, List<ByteBuffer>>();
 
-	public NioServer(String address, int port) throws IOException {
-		this (InetAddress.getByName(address), port, new EchoWorker());
+	public NioServer(String address, int port, Mediator med) throws IOException {
+		this (InetAddress.getByName(address), port, new EchoWorker(med));
 	}
 	
 	public NioServer(InetAddress hostAddress, int port, IWorker worker) throws IOException {
@@ -226,12 +228,12 @@ public class NioServer implements Runnable {
 		}
 	}
 
-	public static void main(String[] args) {
-		try {
-			EchoWorker worker = new EchoWorker();
-			new Thread(new NioServer(InetAddress.getByName("127.0.0.1"), 9090, worker)).start();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+//	public static void main(String[] args) {
+//		try {
+//			EchoWorker worker = new EchoWorker();
+//			new Thread(new NioServer(InetAddress.getByName("127.0.0.1"), 9090, worker)).start();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//	}
 }

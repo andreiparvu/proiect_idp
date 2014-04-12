@@ -12,6 +12,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import main.Mediator;
+
 import org.yaml.snakeyaml.Yaml;
 
 public class Client extends NioServer implements IClient {
@@ -19,9 +21,8 @@ public class Client extends NioServer implements IClient {
 
 	Map <String, FileData> fileContents = new HashMap <String, FileData> ();
 	
-	public Client(String clientHost, int clientPort, String serverHost, int serverPort) 
-	throws IOException {
-		this(InetAddress.getByName(clientHost), clientPort, new EchoWorker());
+	public Client(String clientHost, int clientPort, Mediator med) throws IOException {
+		this(InetAddress.getByName(clientHost), clientPort, new EchoWorker(med));
 	}
 	
 	public Client(InetAddress myAddress, int myPort, IWorker worker) 
@@ -165,6 +166,7 @@ public class Client extends NioServer implements IClient {
 		
 		sendMessage(address, port, message);
 		while (fileContents.get(filename) == null || !fileContents.get(filename).isComplete()) {
+			System.out.println("baga o fisa");
 			try {
 				Thread.sleep(1000);
 				if (fileContents.get(filename) != null) {
@@ -181,34 +183,5 @@ public class Client extends NioServer implements IClient {
 		}
 		
 		return fileContents.get(filename).newFile();
-	}
-	
-	/**
-	 * How to run locally:
-	 * 	- create new Client on the listen port of your choice
-	 * 	- publish one or more files
-	 * 	- start
-	 * 	- delete the file(s) you just published (they're all in memory)
-	 * 
-	 * Then:
-	 * 	- create a Client on another port
-	 * 	- call retrieveFile on the address and port of the first Client
-	 * 	- start
-	 * 	- watch a new file magically appearing 
-	 * 
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		try {
-			Client client = new Client(InetAddress.getByName("localhost"), 1265,
-					new EchoWorker());
-			Thread t = new Thread(client);
-			t.start();
-//			client.publishFile(new File("kids.jpg"));
-//			Thread.sleep(10000);
-			client.retrieveFile(InetAddress.getByName("localhost"), 1264, "kids.jpg");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+	}	
 }

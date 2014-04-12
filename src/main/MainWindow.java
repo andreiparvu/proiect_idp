@@ -1,3 +1,4 @@
+package main;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -16,6 +17,8 @@ import javax.swing.table.DefaultTableModel;
 public class MainWindow extends JFrame {
   static MainWindow frame;
   static String curUser;
+  static String curIP;
+  static int curPort;
   
   Mediator mediator;
 
@@ -49,7 +52,7 @@ public class MainWindow extends JFrame {
     WebServiceClient webServiceClient = new WebServiceClient(mediator);
     mediator.registerWebServiceClient(webServiceClient);
 
-    Network network = new Network(mediator);
+    Network network = new Network(mediator, curIP, curPort);
     mediator.registerNetwork(network);
     
     fileList = new FileList(mediator, new DefaultListModel<String>());
@@ -105,6 +108,13 @@ public class MainWindow extends JFrame {
     	}
     	
     	s.close();
+    	
+    	File dir = new File(curUser + "/");
+    	for (File curFile : dir.listFiles()) {
+    		if (!curFile.isDirectory()) {
+    			mediator.addCurrentFile(curFile);
+    		}
+    	}
     } catch (IOException ex) {
     	ex.printStackTrace();
     }
@@ -124,6 +134,8 @@ public class MainWindow extends JFrame {
 
   public static void main(String[] args) {
   	curUser = args[0];
+  	curIP = args[1];
+  	curPort = Integer.parseInt(args[2]);
   	
     // Schedule a job for the event-dispatching thread:
     // creating and showing this application's GUI.

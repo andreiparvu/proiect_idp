@@ -1,3 +1,4 @@
+package main;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -64,6 +65,10 @@ public class WebServiceClient {
   }
   
   public void receivedPartOfFile(String file) {
-    med.addFilePart(file, 10);
+//    med.addFilePart(file, 10);
+  }
+  
+  public void publishFile(File f) {
+  	// inca nimic \:D/
   }
 }

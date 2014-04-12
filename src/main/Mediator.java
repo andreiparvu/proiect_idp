@@ -1,3 +1,5 @@
+package main;
+import java.io.File;
 import java.util.ArrayList;
 
 import javax.swing.JTextArea;
@@ -55,6 +57,11 @@ public class Mediator {
     this.userList.removeElement(userName);
   }
 
+  public void addCurrentFile(File file) {
+  	network.publishFile(file);
+  	webServiceClient.publishFile(file);
+  }
+  
   public void showFiles(String userName) {
     ArrayList<String> files = this.webServiceClient.getFilesFromUser(userName);
 
@@ -89,7 +96,8 @@ public class Mediator {
     		webServiceClient.getPort(this.userList.selectedUser), this.fileList.selectedFile);
   }
 
-  public void addFilePart(String name, int quantity) {
+  public void addFilePart(String name, float quantity) {
+  	System.out.println(name + " " + quantity);
     eventTable.updateProgressBar(name, quantity);
   }
 }
