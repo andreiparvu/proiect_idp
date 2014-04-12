@@ -54,9 +54,9 @@ public class EventTable extends JTable {
     }
 
     for (Object[] rowData: allData) {
-      if (rowData[0].equals(from)
-          && rowData[1].equals(to)
-          && rowData[2].equals(file))
+      if (rowData[0].equals(from) &&
+      		rowData[1].equals(to) &&
+      		rowData[2].equals(file))
         return true;
     }
 

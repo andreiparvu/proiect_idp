@@ -6,6 +6,7 @@ import javax.swing.JTextArea;
 public class Mediator {
   UserList userList;
   FileList fileList;
+  Network network;
   WebServiceClient webServiceClient;
   EventTable eventTable;
   JTextArea statusText;
@@ -13,7 +14,7 @@ public class Mediator {
   public static final String GETING_FILES_FROM = "Getting files from ";
   public static final String DOWNLOADING_FILE = "Downloading file ";
 
-  private String status = "morti";
+  private String status = "Idle";
 
   public Mediator() {
   }
@@ -27,6 +28,10 @@ public class Mediator {
     this.fileList = fileList;
   }
 
+  public void registerNetwork(Network network) {
+  	this.network = network;
+  }
+  
   public void registerWebServiceClient(WebServiceClient webServiceClient) {
     this.webServiceClient = webServiceClient;
   }
@@ -79,6 +84,9 @@ public class Mediator {
         + " from " + this.userList.selectedUser);
     eventTable.addEntry(this.userList.selectedUser, this.fileList.selectedFile,
         true);
+    
+    network.startDownload(webServiceClient.getIP(this.userList.selectedUser),
+    		webServiceClient.getPort(this.userList.selectedUser), this.fileList.selectedFile);
   }
 
   public void addFilePart(String name, int quantity) {
