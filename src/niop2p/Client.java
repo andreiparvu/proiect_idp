@@ -19,7 +19,7 @@ public class Client extends NioServer implements IClient {
 
 	Map <String, FileData> fileContents = new HashMap <String, FileData> ();
 	
-	public Client(String clientHost, int clientPort, String serverHost, int serverPort) 
+	public Client(String clientHost, int clientPort) 
 	throws IOException {
 		this(InetAddress.getByName(clientHost), clientPort, new EchoWorker());
 	}
@@ -73,7 +73,6 @@ public class Client extends NioServer implements IClient {
 					this.changeRequests.clear();
 				}
 
-//				System.out.println("(" + myPort + ") selecting...");
 				// Wait for an event one of the registered channels
 				this.selector.select();
 
@@ -163,16 +162,23 @@ public class Client extends NioServer implements IClient {
 		FdQueryMessage message = new FdQueryMessage(filename);
 		int nChunks = Integer.MAX_VALUE;
 		
+		// send my wishes to file's owner
 		sendMessage(address, port, message);
+		
 		while (fileContents.get(filename) == null || !fileContents.get(filename).isComplete()) {
 			try {
+				// wait for some more data
 				Thread.sleep(1000);
+				
 				if (fileContents.get(filename) != null) {
 					System.out.println("waiting for " + fileContents.get(filename).chunksLeft);
 					if (fileContents.get(filename).chunksLeft == nChunks) {
+						// I'm done, my file is complete
 						System.out.println("wakin up!");
 						worker.processRemainingData();
 					}
+					
+					// update my waiting count
 					nChunks = fileContents.get(filename).chunksLeft;
 				}
 			} catch (InterruptedException e) {
@@ -180,6 +186,7 @@ public class Client extends NioServer implements IClient {
 			}
 		}
 		
+		// spit new file cuz I have all I need
 		return fileContents.get(filename).newFile();
 	}
 	
