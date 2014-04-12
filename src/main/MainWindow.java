@@ -108,7 +108,6 @@ public class MainWindow extends JFrame {
     	}
     	
     	s.close();
-    	
     	File dir = new File(curUser + "/");
     	for (File curFile : dir.listFiles()) {
     		if (!curFile.isDirectory()) {
