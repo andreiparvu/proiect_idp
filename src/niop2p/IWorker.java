@@ -21,24 +21,6 @@ public interface IWorker extends Runnable {
 	void processRemainingData();
 	
 	/**
-	 * Handled by any member of the network.
-	 * 
-	 * @param message	the message to be processed
-	 * @param event		the ServerDataEvent that recorded the sender and receiver of this message
-	 */
-	void process(AnnounceMessage message, ServerDataEvent event);
-	
-	/**
-	 * Handled by the <b>central node</b>. Receives a notification message from a client that
-	 * has just published a file. Creates the appropriate associations so that subsequent description
-	 * requests are dealt with appropriately.
-	 * 
-	 * @param message	the message to be processed
-	 * @param event		the ServerDataEvent that recorded the sender and receiver of this message
-	 */
-	void process(PublishFileMessage message, ServerDataEvent event);
-	
-	/**
 	 * Handled by the <b>central node</b>. Receives file description requests from a client
 	 * and replies with the appropriate message. Sends back an FdQueryReply message, containing
 	 * the requested file description and the list of all peers that contain the file chunks.
@@ -76,14 +58,4 @@ public interface IWorker extends Runnable {
 	 */
 	void process(ChunkReplyMessage message, ServerDataEvent event);
 	
-	/**
-	 * Handled by <b>the central node</b>. Receives a notification that a chunk is newly available at
-	 * the NioClient that resides in the VM that sent this message. <br>
-	 * 
-	 * The NioClient's connection data is retrieved from the ServerDataEvent parameter of this method.
-	 * 
-	 * @param message	the message to be processed
-	 * @param event		the ServerDataEvent that records the sender and receiver of this message
-	 */
-	void process(ChunkPublishMessage message, ServerDataEvent event);
 }

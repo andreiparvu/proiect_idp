@@ -1,34 +1,21 @@
 package niop2p;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
 import org.yaml.snakeyaml.Yaml;
 
 public class EchoWorker implements IWorker {
 	
 	private List<ServerDataEvent> queue = new LinkedList<ServerDataEvent>();
-	private Assoc assoc = new Assoc();
 	private Map <SocketChannel, StringBuffer> buffers = new HashMap<SocketChannel, StringBuffer>();
 	private NioServer master;
-	private final Logger logger = Logger.getLogger(EchoWorker.class);
-	
+
 	// at construction phase
-	public EchoWorker(String logFilename) {
-		try {
-			FileAppender fileappender = new FileAppender(new PatternLayout(), "logs/" + logFilename);
-			logger.addAppender(fileappender);
-		} catch (IOException e) {
-			System.err.println("IOException at FileAppender creation within " + this.getClass());
-		}
+	public EchoWorker() {
+		
 	}
 	
 	public void processData(NioServer server, SocketChannel socket, byte[] data, int count) {
@@ -84,12 +71,25 @@ public class EchoWorker implements IWorker {
 	private void processLastBuffers() {
 		Yaml yaml = new Yaml();
 		
+//		for (SocketChannel key : buffers.keySet()) {
+//			StringBuffer sb = buffers.get(key);
+//			if (sb.length() != 0) {
+//				System.out.println(sb);
+//				IMessage message = (IMessage) yaml.load(sb.toString());
+//				message.allowProcessing(this, new ServerDataEvent(master, key, null));
+//				sb.delete(0, sb.length());
+//			}
+//		}
+		
 		for (SocketChannel key : buffers.keySet()) {
 			StringBuffer sb = buffers.get(key);
 			if (sb.length() != 0) {
-				IMessage message = (IMessage) yaml.load(sb.toString());
-				message.allowProcessing(this, new ServerDataEvent(master, key, null));
-				sb.delete(0, sb.length());
+				String[] morti = sb.toString().split("!!niop2p.ChunkReplyMessage");
+				for (String jeg : morti) if (jeg.length() > 0){
+					IMessage message = (IMessage) yaml.load("!!niop2p.ChunkReplyMessage" + jeg);
+					message.allowProcessing(this, new ServerDataEvent(master, key, null));
+					sb.delete(0, sb.length());
+				}
 			}
 		}
 	}
@@ -115,51 +115,20 @@ public class EchoWorker implements IWorker {
 			}
 		}
 	}
-
-	@Override
-	public void process(PublishFileMessage m, ServerDataEvent event) {
-		assoc.addFileDescription(m.address, m.port, m.description);
-		try {
-			logger.info("Received publish notification of file " + m.description.filename 
-					+ " from " + event.socket.getRemoteAddress());
-		} catch (IOException e) {
-			// eat it up
-		}
-	}
-	
-	@Override
-	public void process(AnnounceMessage message, ServerDataEvent event) {
-		try {
-			logger.info("Received announce message from " + event.socket.getRemoteAddress());
-		} catch (IOException e) {
-			// eat it up
-		}
-	}
 	
 	@Override
 	public void process(FdQueryMessage message, ServerDataEvent event) {
-		try {
-			logger.info("Received file description request message from " + event.socket.getRemoteAddress());
-		} catch (IOException e) {
-			// eat it up
-		}
-		
-		FileDescription fd = assoc.getFileDescription(message.filename);
-		Map<Integer, List<PeerAddress>> list = assoc.getPeerList(message.filename);
-		FdQueryReply reply = new FdQueryReply(fd, list);
+
+		// TODO build up file description based on file
+		FileData fileData = ((Client)master).fileContents.get(message.filename);
+		FileDescription fd = fileData.fd;
+		FdQueryReply reply = new FdQueryReply(fd);
 		
 		event.server.sendMessage(event.socket, reply);
 	}
 	
 	@Override
 	public void process(FdQueryReply message, ServerDataEvent event) {
-		try {
-			logger.info("Received file description message for file " + message.fd.filename + 
-					" from " + event.socket.getRemoteAddress());
-		} catch (IOException e) {
-			// eat it up
-		}
-		
 		Client owner = (Client)event.server;
 		
 		synchronized (owner.fileContents) {
@@ -168,12 +137,9 @@ public class EchoWorker implements IWorker {
 		
 		for (int i = 0; i < message.fd.getNChunks(); i++)
 			try {
-				byte[] address = message.peerList.get(i).get(0).address;
-				int port = message.peerList.get(i).get(0).port;
-				InetAddress peerAddress = InetAddress.getByAddress(address);
 				String filename = message.fd.filename;
 				
-				((Client)event.server).sendMessage(peerAddress, port, new ChunkRequestMessage(filename,i));
+				((Client)event.server).sendMessage(event.socket, new ChunkRequestMessage(filename,i));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -181,13 +147,6 @@ public class EchoWorker implements IWorker {
 	
 	@Override
 	public void process(ChunkRequestMessage message, ServerDataEvent event) {
-		try {
-			logger.info("Received chunk request message for chunk " + message.filename + ":" + message.chunkIndex
-					+ " from " + event.socket.getRemoteAddress());
-		} catch (IOException e) {
-			// eat it up
-		}
-		
 		Client owner = (Client)event.server;
 		
 		synchronized (owner.fileContents) {
@@ -201,47 +160,10 @@ public class EchoWorker implements IWorker {
 	
 	@Override
 	public void process(ChunkReplyMessage message, ServerDataEvent event) {
-		try {
-			logger.info("Received data for chunk " + message.filename + ":" + message.chunkIndex
-					+ " from " + event.socket.getRemoteAddress());
-		} catch (IOException e) {
-			// eat it up
-		}
-		
 		Client owner = (Client)event.server;
 		
 		synchronized (owner.fileContents) {
 			owner.fileContents.get(message.filename).storeData(message.chunkIndex, message.data);
-		}
-		
-		try {
-			ChunkPublishMessage notification = new ChunkPublishMessage(message.filename, message.chunkIndex);
-			owner.sendMessage(owner.serverAddress, owner.serverPort, notification);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	@Override
-	public void process(ChunkPublishMessage message, ServerDataEvent event) {
-		try {
-			try {
-				logger.info("Received chunk publish message for " + message.filename + ":" + message.chunkIndex
-						+ " from " + event.socket.getRemoteAddress());
-			} catch (IOException e) {
-				// eat it up
-			}
-			
-			InetSocketAddress socketAddress = (InetSocketAddress) event.socket.getRemoteAddress();
-			InetAddress address = socketAddress.getAddress();
-			int port = socketAddress.getPort();
-			String filename = message.filename;
-			int chunkIndex = message.chunkIndex;
-			
-			assoc.addPeerForChunk(address, port, filename, chunkIndex);
-		} catch (IOException e) {
-			System.err.println("IOException at process chunkPublishMessage");
-			e.printStackTrace();
 		}
 	}
 }

@@ -16,25 +16,18 @@ import org.yaml.snakeyaml.Yaml;
 
 public class Client extends NioServer implements IClient {
 	// The host:port combination to listen on
-	InetAddress serverAddress;
-	int serverPort;
 
 	Map <String, FileData> fileContents = new HashMap <String, FileData> ();
 	
 	public Client(String clientHost, int clientPort, String serverHost, int serverPort) 
 	throws IOException {
-		this(InetAddress.getByName(clientHost), clientPort, InetAddress.getByName(serverHost), serverPort,
-				new EchoWorker("client[" + clientHost + ":" + clientPort + "].log"));
+		this(InetAddress.getByName(clientHost), clientPort, new EchoWorker());
 	}
 	
-	public Client(InetAddress myAddress, int myPort, InetAddress serverAddress, int serverPort, IWorker worker) 
+	public Client(InetAddress myAddress, int myPort, IWorker worker) 
 			throws IOException {
 		// call super-constructor
 		super(myAddress, myPort, worker);
-		
-		// initialize my own stuff
-		this.serverAddress = serverAddress;
-		this.serverPort = serverPort;
 	}
 
 	private SocketChannel initiateConnection(InetAddress address, int port) throws IOException {
@@ -46,7 +39,6 @@ public class Client extends NioServer implements IClient {
 
 		// Kick off connection establishment
 		socketChannel.connect(new InetSocketAddress(address, port));
-
 			
 		// Queue a channel registration since the caller is not the
 		// selecting thread. As part of the registration we'll register
@@ -157,14 +149,11 @@ public class Client extends NioServer implements IClient {
 	
 	@Override
 	public void publishFile(File file) throws IOException {
-		FileDescription description = new FileDescription(file);
 		fileContents.put(file.getName(), new FileData(file));
-		PublishFileMessage message = new PublishFileMessage(myAddress.getAddress(), myPort, description);
-		sendMessage(serverAddress, serverPort, message);
 	}
 	
 	@Override
-	public File retrieveFile(String filename) throws IOException {
+	public File retrieveFile(InetAddress address, int port, String filename) throws IOException {
 		File file = new File(filename);
 		if (file.exists()) {
 			System.out.println("File " + filename + " already exists at " + file.getAbsolutePath());
@@ -174,7 +163,7 @@ public class Client extends NioServer implements IClient {
 		FdQueryMessage message = new FdQueryMessage(filename);
 		int nChunks = Integer.MAX_VALUE;
 		
-		sendMessage(serverAddress, serverPort, message);
+		sendMessage(address, port, message);
 		while (fileContents.get(filename) == null || !fileContents.get(filename).isComplete()) {
 			try {
 				Thread.sleep(1000);
@@ -194,15 +183,30 @@ public class Client extends NioServer implements IClient {
 		return fileContents.get(filename).newFile();
 	}
 	
+	/**
+	 * How to run locally:
+	 * 	- create new Client on the listen port of your choice
+	 * 	- publish one or more files
+	 * 	- start
+	 * 	- delete the file(s) you just published (they're all in memory)
+	 * 
+	 * Then:
+	 * 	- create a Client on another port
+	 * 	- call retrieveFile on the address and port of the first Client
+	 * 	- start
+	 * 	- watch a new file magically appearing 
+	 * 
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		try {
-			Client client = new Client(InetAddress.getByName("localhost"), 1264,
-					InetAddress.getByName("localhost"), 9090, new EchoWorker("client1237.txt"));
+			Client client = new Client(InetAddress.getByName("localhost"), 1265,
+					new EchoWorker());
 			Thread t = new Thread(client);
 			t.start();
 //			client.publishFile(new File("kids.jpg"));
 //			Thread.sleep(10000);
-			client.retrieveFile("kids.jpg");
+			client.retrieveFile(InetAddress.getByName("localhost"), 1264, "kids.jpg");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

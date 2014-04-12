@@ -45,6 +45,7 @@ public class FileData {
 			fis.close();
 		} catch (Exception e) {
 			System.err.println("Exception caught in populateData for file " + file.getName() + "!");
+			e.printStackTrace();
 		}
 	}
 	

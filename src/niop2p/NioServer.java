@@ -41,7 +41,7 @@ public class NioServer implements Runnable {
 	Map<SocketChannel, List<ByteBuffer>> pendingData = new HashMap<SocketChannel, List<ByteBuffer>>();
 
 	public NioServer(String address, int port) throws IOException {
-		this (InetAddress.getByName(address), port, new EchoWorker("tracker [" + address + ":" + port + "].log"));
+		this (InetAddress.getByName(address), port, new EchoWorker());
 	}
 	
 	public NioServer(InetAddress hostAddress, int port, IWorker worker) throws IOException {
@@ -228,7 +228,7 @@ public class NioServer implements Runnable {
 
 	public static void main(String[] args) {
 		try {
-			EchoWorker worker = new EchoWorker("tracker.txt");
+			EchoWorker worker = new EchoWorker();
 			new Thread(new NioServer(InetAddress.getByName("127.0.0.1"), 9090, worker)).start();
 		} catch (IOException e) {
 			e.printStackTrace();

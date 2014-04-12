@@ -1,6 +1,7 @@
 package niop2p;
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
 
 
 public interface IClient {
@@ -53,5 +54,6 @@ public interface IClient {
      *                      {@link Exception#Exception(String, Throwable)} pentru detalii)
      *  
      */
-    public abstract File retrieveFile(String filename) throws IOException;
+		File retrieveFile(InetAddress address, int port, String filename)
+				throws IOException;
 }
