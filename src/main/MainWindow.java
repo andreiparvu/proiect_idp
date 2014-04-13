@@ -1,8 +1,6 @@
 package main;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
@@ -14,12 +12,14 @@ import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.table.DefaultTableModel;
 
+import org.apache.log4j.Logger;
+
 public class MainWindow extends JFrame {
   static MainWindow frame;
   static String curUser;
   static String curIP;
   static int curPort;
-  
+
   Mediator mediator;
 
   private static final long serialVersionUID = -4202146695554199981L;
@@ -31,6 +31,8 @@ public class MainWindow extends JFrame {
   private JList<String> fileList;
 
   private JList<String> userList;
+
+  static Logger logger = Logger.getLogger(MainWindow.class);
 
   class MyTableModel extends DefaultTableModel {
 
@@ -54,7 +56,7 @@ public class MainWindow extends JFrame {
 
     Network network = new Network(mediator, curIP, curPort);
     mediator.registerNetwork(network);
-    
+
     fileList = new FileList(mediator, new DefaultListModel<String>());
 
     JScrollPane fileListScrollPane = new JScrollPane(fileList);
@@ -91,31 +93,33 @@ public class MainWindow extends JFrame {
 
     // Add the split pane to this frame
     getContentPane().add(superSplitPane);
-    
+
+    logger.info("Created the GUI.");
+
     try {
-    	Scanner s = new Scanner(new File(curUser + ".txt"));
-    	while (s.hasNextLine()) {
-    		String line = s.nextLine();
-    		
-    		StringTokenizer st = new StringTokenizer(line, "=");
-    		
-    		String prop = st.nextToken(), value = st.nextToken();
-    		
-    		System.out.println(prop + value);
-    		if (prop.compareTo("user") == 0) {
-    			webServiceClient.newUser(value, st.nextToken(), Integer.parseInt(st.nextToken()));
-    		}
-    	}
-    	
-    	s.close();
-    	File dir = new File(curUser + "/");
-    	for (File curFile : dir.listFiles()) {
-    		if (!curFile.isDirectory()) {
-    			mediator.addCurrentFile(curFile);
-    		}
-    	}
+      Scanner s = new Scanner(new File(curUser + ".txt"));
+      while (s.hasNextLine()) {
+        String line = s.nextLine();
+
+        StringTokenizer st = new StringTokenizer(line, "=");
+
+        String prop = st.nextToken(), value = st.nextToken();
+
+        System.out.println(prop + value);
+        if (prop.compareTo("user") == 0) {
+          webServiceClient.newUser(value, st.nextToken(), Integer.parseInt(st.nextToken()));
+        }
+      }
+
+      s.close();
+      File dir = new File(curUser + "/");
+      for (File curFile : dir.listFiles()) {
+        if (!curFile.isDirectory()) {
+          mediator.addCurrentFile(curFile);
+        }
+      }
     } catch (IOException ex) {
-    	ex.printStackTrace();
+      ex.printStackTrace();
     }
   }
 
@@ -132,10 +136,10 @@ public class MainWindow extends JFrame {
   }
 
   public static void main(String[] args) {
-  	curUser = args[0];
-  	curIP = args[1];
-  	curPort = Integer.parseInt(args[2]);
-  	
+    curUser = args[0];
+    curIP = args[1];
+    curPort = Integer.parseInt(args[2]);
+
     // Schedule a job for the event-dispatching thread:
     // creating and showing this application's GUI.
     javax.swing.SwingUtilities.invokeLater(new Runnable() {
@@ -143,41 +147,5 @@ public class MainWindow extends JFrame {
         createAndShowGUI();
       }
     });
-    
-    
-    // Mock testing routine
-//    while (true) {
-//      BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-//
-//      String command = null;
-//
-//      //  read the username from the command-line; need to use try/catch with the
-//      //  readLine() method
-//      try {
-//        command = br.readLine();
-//        StringTokenizer st = new StringTokenizer(command, " \n");
-//
-//        String cmd = st.nextToken();
-//        cmd = "all";
-//
-//        switch(cmd) {
-//          case "add_user":
-//            frame.mediator.addUser(st.nextToken());
-//            break;
-//          case "rm_user":
-//            frame.mediator.delUser(st.nextToken());
-//          case "all":
-//            frame.mediator.addUser("andrei");
-//            frame.mediator.addUser("daniel");
-//            break;
-//          case "add_part":
-//            frame.mediator.addFilePart(st.nextToken(), 10);
-//            break;
-//        }
-//
-//      } catch (Exception ioe) {
-//        System.out.println("IO error trying to read your name!");
-//      }
-//    }
   }
 }

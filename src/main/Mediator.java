@@ -31,9 +31,9 @@ public class Mediator {
   }
 
   public void registerNetwork(Network network) {
-  	this.network = network;
+    this.network = network;
   }
-  
+
   public void registerWebServiceClient(WebServiceClient webServiceClient) {
     this.webServiceClient = webServiceClient;
   }
@@ -58,10 +58,10 @@ public class Mediator {
   }
 
   public void addCurrentFile(File file) {
-  	network.publishFile(file);
-  	webServiceClient.publishFile(file);
+    network.publishFile(file);
+    webServiceClient.publishFile(file);
   }
-  
+
   public void showFiles(String userName) {
     ArrayList<String> files = this.webServiceClient.getFilesFromUser(userName);
 
@@ -91,13 +91,12 @@ public class Mediator {
         + " from " + this.userList.selectedUser);
     eventTable.addEntry(this.userList.selectedUser, this.fileList.selectedFile,
         true);
-    
+
     network.startDownload(webServiceClient.getIP(this.userList.selectedUser),
-    		webServiceClient.getPort(this.userList.selectedUser), this.fileList.selectedFile);
+        webServiceClient.getPort(this.userList.selectedUser), this.fileList.selectedFile);
   }
 
   public void addFilePart(String name, float quantity) {
-  	System.out.println(name + " " + quantity);
     eventTable.updateProgressBar(name, quantity);
   }
 }

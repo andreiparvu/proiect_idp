@@ -4,12 +4,16 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import org.apache.log4j.Logger;
+
 
 public class FileData {
 
 	FileDescription fd;
 	byte[][] data;
 	int chunksLeft;
+	
+	static Logger logger = Logger.getLogger(FileData.class);
 	
 	public FileData (File file) {
 		this(new FileDescription(file));
@@ -44,7 +48,7 @@ public class FileData {
 			}
 			fis.close();
 		} catch (Exception e) {
-			System.err.println("Exception caught in populateData for file " + file.getName() + "!");
+			logger.error("Exception caught in populateData for file " + file.getName() + "!");
 			e.printStackTrace();
 		}
 	}

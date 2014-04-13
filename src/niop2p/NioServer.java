@@ -17,6 +17,7 @@ import java.util.Map;
 
 import main.Mediator;
 
+import org.apache.log4j.Logger;
 import org.yaml.snakeyaml.Yaml;
 
 public class NioServer implements Runnable {
@@ -42,6 +43,8 @@ public class NioServer implements Runnable {
 	// Maps a SocketChannel to a list of ByteBuffer instances
 	Map<SocketChannel, List<ByteBuffer>> pendingData = new HashMap<SocketChannel, List<ByteBuffer>>();
 
+	static Logger logger = Logger.getLogger(NioServer.class);
+	
 	public NioServer(String address, int port, Mediator med) throws IOException {
 		this (InetAddress.getByName(address), port, new EchoWorker(med));
 	}
@@ -150,7 +153,7 @@ public class NioServer implements Runnable {
 		} catch (IOException e) {
 			// The remote forcibly closed the connection, cancel
 			// the selection key and close the channel.
-			System.out.println("Stupid someone force-closed");
+			logger.info("Someone force-closed the server instance!");
 			key.cancel();
 			socketChannel.close();
 			return;
@@ -159,7 +162,7 @@ public class NioServer implements Runnable {
 		if (numRead == -1) {
 			// Remote entity shut the socket down cleanly. Do the
 			// same from our end and cancel the channel.
-			System.out.println("Someone closed cleanly");
+			logger.info("Someone closed cleanlythe server instance.");
 			key.channel().close();
 			key.cancel();
 			return;
@@ -227,13 +230,4 @@ public class NioServer implements Runnable {
 			}
 		}
 	}
-
-//	public static void main(String[] args) {
-//		try {
-//			EchoWorker worker = new EchoWorker();
-//			new Thread(new NioServer(InetAddress.getByName("127.0.0.1"), 9090, worker)).start();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//	}
 }

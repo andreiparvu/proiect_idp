@@ -74,16 +74,6 @@ public class EchoWorker implements IWorker {
 	private void processLastBuffers() {
 		Yaml yaml = new Yaml();
 		
-//		for (SocketChannel key : buffers.keySet()) {
-//			StringBuffer sb = buffers.get(key);
-//			if (sb.length() != 0) {
-//				System.out.println(sb);
-//				IMessage message = (IMessage) yaml.load(sb.toString());
-//				message.allowProcessing(this, new ServerDataEvent(master, key, null));
-//				sb.delete(0, sb.length());
-//			}
-//		}
-		
 		for (SocketChannel key : buffers.keySet()) {
 			StringBuffer sb = buffers.get(key);
 			if (sb.length() != 0) {
@@ -138,7 +128,7 @@ public class EchoWorker implements IWorker {
 			owner.fileContents.put(message.fd.filename, new FileData(message.fd));
 		}
 		
-		for (int i = 0; i < message.fd.getNChunks(); i++)
+		for (int i = 0; i < message.fd.getNChunks(); i++) {
 			try {
 				String filename = message.fd.filename;
 				
@@ -146,6 +136,7 @@ public class EchoWorker implements IWorker {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		}
 	}
 	
 	@Override
@@ -170,7 +161,6 @@ public class EchoWorker implements IWorker {
 			
 			FileData fd = owner.fileContents.get(message.filename);
 			
-			System.out.println("plm " + (float)fd.fd.chunkSize * 100 / fd.fd.totalSize);
 			med.addFilePart(message.filename, (float)fd.fd.chunkSize * 100 / fd.fd.totalSize);
 		}
 	}

@@ -14,12 +14,15 @@ import java.util.Map;
 
 import main.Mediator;
 
+import org.apache.log4j.Logger;
 import org.yaml.snakeyaml.Yaml;
 
 public class Client extends NioServer implements IClient {
 	// The host:port combination to listen on
 
 	Map <String, FileData> fileContents = new HashMap <String, FileData> ();
+	
+	static Logger logger = Logger.getLogger(Client.class);
 	
 	public Client(String clientHost, int clientPort, Mediator med) throws IOException {
 		this(InetAddress.getByName(clientHost), clientPort, new EchoWorker(med));
@@ -74,7 +77,6 @@ public class Client extends NioServer implements IClient {
 					this.changeRequests.clear();
 				}
 
-//				System.out.println("(" + myPort + ") selecting...");
 				// Wait for an event one of the registered channels
 				this.selector.select();
 
@@ -157,7 +159,7 @@ public class Client extends NioServer implements IClient {
 	public File retrieveFile(InetAddress address, int port, String filename) throws IOException {
 		File file = new File(filename);
 		if (file.exists()) {
-			System.out.println("File " + filename + " already exists at " + file.getAbsolutePath());
+			logger.error("File " + filename + " already exists at " + file.getAbsolutePath());
 			return file;
 		}
 		
@@ -166,13 +168,12 @@ public class Client extends NioServer implements IClient {
 		
 		sendMessage(address, port, message);
 		while (fileContents.get(filename) == null || !fileContents.get(filename).isComplete()) {
-			System.out.println("baga o fisa");
 			try {
 				Thread.sleep(1000);
 				if (fileContents.get(filename) != null) {
-					System.out.println("waiting for " + fileContents.get(filename).chunksLeft);
+					logger.info("waiting for " + fileContents.get(filename).chunksLeft + " chunks from " + filename);
 					if (fileContents.get(filename).chunksLeft == nChunks) {
-						System.out.println("wakin up!");
+						logger.info("wakin up to process chunk from " + filename);
 						worker.processRemainingData();
 					}
 					nChunks = fileContents.get(filename).chunksLeft;
