@@ -15,6 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import main.MainWindow;
 import main.Mediator;
 
 import org.apache.log4j.Logger;
@@ -50,6 +51,8 @@ public class NioServer implements Runnable {
 	}
 	
 	public NioServer(InetAddress hostAddress, int port, IWorker worker) throws IOException {
+		logger.addAppender(MainWindow.appender);
+		
 		this.myAddress = hostAddress;
 		this.myPort = port;
 		this.selector = this.initSelector();

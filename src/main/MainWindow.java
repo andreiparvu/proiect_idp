@@ -12,7 +12,9 @@ import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.table.DefaultTableModel;
 
+import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
 
 public class MainWindow extends JFrame {
   static MainWindow frame;
@@ -33,6 +35,7 @@ public class MainWindow extends JFrame {
   private JList<String> userList;
 
   static Logger logger = Logger.getLogger(MainWindow.class);
+  public static FileAppender appender;
 
   class MyTableModel extends DefaultTableModel {
 
@@ -139,6 +142,14 @@ public class MainWindow extends JFrame {
     curUser = args[0];
     curIP = args[1];
     curPort = Integer.parseInt(args[2]);
+
+    try {
+    	File logFile = new File(curUser + ".log");
+    	appender = new FileAppender(new PatternLayout(), logFile.getName() , false);
+  	} catch (IOException ex) {
+  		ex.printStackTrace();
+  	}
+    logger.addAppender(appender);
 
     // Schedule a job for the event-dispatching thread:
     // creating and showing this application's GUI.

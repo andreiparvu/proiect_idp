@@ -18,7 +18,8 @@ public class Network {
 
   public Network(Mediator med, String myAddress, int myPort) {
     this.med = med;
-
+    logger.addAppender(MainWindow.appender);
+    
     try {
       client = new Client(myAddress, myPort, med);
       pool.execute(client);
