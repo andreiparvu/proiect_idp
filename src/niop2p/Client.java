@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import main.MainWindow;
 import main.Mediator;
 
 import org.apache.log4j.Logger;
@@ -32,6 +33,7 @@ public class Client extends NioServer implements IClient {
 			throws IOException {
 		// call super-constructor
 		super(myAddress, myPort, worker);
+		logger.addAppender(MainWindow.appender);
 	}
 
 	private SocketChannel initiateConnection(InetAddress address, int port) throws IOException {

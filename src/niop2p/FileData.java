@@ -4,6 +4,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import main.MainWindow;
+
 import org.apache.log4j.Logger;
 
 
@@ -19,12 +21,16 @@ public class FileData {
 		this(new FileDescription(file));
 		populateData(file);
 		chunksLeft = 0;
+		
+		logger.addAppender(MainWindow.appender);
 	}
 	
 	public FileData (FileDescription fileDescription) {
 		fd = fileDescription;
 		chunksLeft = (int) fd.getNChunks();
 		data = new byte[chunksLeft][fd.chunkSize];
+		
+		logger.addAppender(MainWindow.appender);
 	}
 	
 	public byte[] getChunkData(int index) {

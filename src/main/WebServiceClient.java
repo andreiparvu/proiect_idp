@@ -18,7 +18,7 @@ public class WebServiceClient {
 
   public WebServiceClient(Mediator med) {
     this.med = med;
-
+    logger.addAppender(MainWindow.appender);
     logger.info("WebServiceClient created.");
   }
 
