@@ -111,8 +111,6 @@ public class EchoWorker implements IWorker {
 	
 	@Override
 	public void process(FdQueryMessage message, ServerDataEvent event) {
-
-		// TODO build up file description based on file
 		FileData fileData = ((Client)master).fileContents.get(message.filename);
 		FileDescription fd = fileData.fd;
 		FdQueryReply reply = new FdQueryReply(fd);

@@ -46,7 +46,7 @@ public class WebServiceClient {
       ex.printStackTrace();
     }
 
-    logger.info("Retireved files from " + userName);
+    logger.info("Retrieved files from " + userName);
 
     return files;
   }
