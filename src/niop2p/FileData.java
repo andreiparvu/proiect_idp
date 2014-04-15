@@ -62,8 +62,20 @@ public class FileData {
 	}
 	
 	public void storeData (int chunkIndex, byte [] data) {
-		System.arraycopy(data, 0, this.data[chunkIndex], 0, data.length);
-		chunksLeft --;
+		try {
+			RandomAccessFile raf = new RandomAccessFile(fd.filename, "rw");
+			FileChannel fc = raf.getChannel();
+			MappedByteBuffer mb;
+			mb = fc.map(FileChannel.MapMode.READ_WRITE, 
+					chunkIndex * fd.chunkSize, chunkIndex * fd.chunkSize + data.length);
+			mb.put(data);
+			chunksLeft --;
+			
+			fc.close();
+			raf.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public boolean isComplete() {
@@ -71,32 +83,6 @@ public class FileData {
 	}
 	
 	public File newFile() {
-		try {
-			buildFile();
-			return new File(fd.filename);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		return null;
-	}
-	
-	private void buildFile() throws IOException {
-		RandomAccessFile raf = new RandomAccessFile(fd.filename, "rw");
-		FileChannel fc = raf.getChannel();
-		MappedByteBuffer mb;
-		
-		for (int i = 0; i < fd.getNChunks(); i++){
-			int chunkSize;
-			if (i < fd.getNChunks() - 1)
-				chunkSize = fd.chunkSize;
-			else
-				chunkSize = (int) (fd.totalSize - (fd.getNChunks() - 1)  * fd.chunkSize);
-			mb = fc.map(FileChannel.MapMode.READ_WRITE, i * fd.chunkSize, i * fd.chunkSize + chunkSize);
-			mb.put(data[i]);
-		}
-		
-		fc.close();
-		raf.close();
+		return new File(fd.filename);
 	}
 }

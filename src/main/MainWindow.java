@@ -30,6 +30,8 @@ public class MainWindow extends JFrame {
   private static final int HEIGHT = 480;
   private static final int STATUS_HEIGHT = 60;
 
+  private static final String LOGS_DIR = "logs";
+  
   private JList<String> fileList;
 
   private JList<String> userList;
@@ -121,6 +123,8 @@ public class MainWindow extends JFrame {
           mediator.addCurrentFile(curFile);
         }
       }
+      
+      mediator.statusText.setText("Current user: " + curUser);
     } catch (IOException ex) {
       ex.printStackTrace();
     }
@@ -152,8 +156,12 @@ public class MainWindow extends JFrame {
 //  	curPort = 8000;
   	
     try {
-    	File logFile = new File(curUser + ".log");
-    	appender = new FileAppender(new PatternLayout(), logFile.getName() , false);
+    	File logFile = new File(LOGS_DIR + "/" + curUser + ".log");
+    	if (!logFile.exists()) {
+    		logFile.createNewFile();
+    	}
+    	
+    	appender = new FileAppender(new PatternLayout(), logFile.getAbsolutePath() , false);
   	} catch (IOException ex) {
   		ex.printStackTrace();
   	}
@@ -164,6 +172,7 @@ public class MainWindow extends JFrame {
     javax.swing.SwingUtilities.invokeLater(new Runnable() {
       public void run() {
         createAndShowGUI();
+        System.out.println("Current user: " + curUser);
       }
     });
   }
