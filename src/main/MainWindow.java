@@ -139,10 +139,18 @@ public class MainWindow extends JFrame {
   }
 
   public static void main(String[] args) {
-    curUser = args[0];
-    curIP = args[1];
-    curPort = Integer.parseInt(args[2]);
-
+//    curUser = args[0];
+//    curIP = args[1];
+//    curPort = Integer.parseInt(args[2]);
+  	
+  	curUser = "daniel";
+  	curIP = "127.0.0.1";
+  	curPort = 9000;
+  	
+//  	curUser = "andrei";
+//  	curIP = "127.0.0.1";
+//  	curPort = 8000;
+  	
     try {
     	File logFile = new File(curUser + ".log");
     	appender = new FileAppender(new PatternLayout(), logFile.getName() , false);

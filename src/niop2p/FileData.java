@@ -1,8 +1,10 @@
 package niop2p;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
 
 import main.MainWindow;
 
@@ -68,23 +70,33 @@ public class FileData {
 		return chunksLeft == 0;
 	}
 	
-	public File newFile() throws IOException {
-		File file = new File(fd.filename);
+	public File newFile() {
+		try {
+			buildFile();
+			return new File(fd.filename);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
-		if (!isComplete() || !file.createNewFile())
-			return null;
+		return null;
+	}
+	
+	private void buildFile() throws IOException {
+		RandomAccessFile raf = new RandomAccessFile(fd.filename, "rw");
+		FileChannel fc = raf.getChannel();
+		MappedByteBuffer mb;
 		
-		FileOutputStream fos = new FileOutputStream(file);
-		for (int i = 0; i < fd.getNChunks(); i++) {
+		for (int i = 0; i < fd.getNChunks(); i++){
 			int chunkSize;
 			if (i < fd.getNChunks() - 1)
 				chunkSize = fd.chunkSize;
 			else
 				chunkSize = (int) (fd.totalSize - (fd.getNChunks() - 1)  * fd.chunkSize);
-			
-			fos.write(data[i], 0, chunkSize);
+			mb = fc.map(FileChannel.MapMode.READ_WRITE, i * fd.chunkSize, i * fd.chunkSize + chunkSize);
+			mb.put(data[i]);
 		}
-		fos.close();
-		return file;
+		
+		fc.close();
+		raf.close();
 	}
 }
