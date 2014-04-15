@@ -1,3 +1,4 @@
+package main;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,6 +9,8 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
+import org.apache.log4j.Logger;
+
 
 // Class for the event table
 public class EventTable extends JTable {
@@ -16,8 +19,11 @@ public class EventTable extends JTable {
   DefaultTableModel model;
   Mediator med;
   ArrayList<JProgressBar> progressBars;
+  ArrayList<Float> progressBarValues;
   HashMap<String, Integer> allFiles;
   ArrayList<Object[]> allData;
+
+  static Logger logger = Logger.getLogger(EventTable.class);
 
   public EventTable(Mediator med, DefaultTableModel model) {
     super(model);
@@ -28,6 +34,7 @@ public class EventTable extends JTable {
     med.registerEventTable(this);
 
     progressBars = new ArrayList<>();
+    progressBarValues = new ArrayList<>();
     allFiles = new HashMap<>();
     allData = new ArrayList<>();
 
@@ -54,9 +61,9 @@ public class EventTable extends JTable {
     }
 
     for (Object[] rowData: allData) {
-      if (rowData[0].equals(from)
-          && rowData[1].equals(to)
-          && rowData[2].equals(file))
+      if (rowData[0].equals(from) &&
+          rowData[1].equals(to) &&
+          rowData[2].equals(file))
         return true;
     }
 
@@ -84,6 +91,7 @@ public class EventTable extends JTable {
     }
 
     progressBars.add(progressBar);
+    progressBarValues.add(0f);
 
     Object[] rowData = {from, to, file, progressBar, status};
     model.addRow(rowData);
@@ -91,43 +99,35 @@ public class EventTable extends JTable {
     allData.add(rowData);
     allFiles.put(file, progressBars.size() - 1);
 
-    // mock a download
-    // might want a separate class for this
-    new Thread(new Runnable() {
-
-      @Override
-      public void run() {
-        String filename = med.fileList.selectedFile;
-        while(getProgress(filename) < 100) {
-          try {
-            synchronized (EventTable.this) {
-              EventTable.this.updateProgressBar(filename, 10);
-            }
-            Thread.sleep(1000);
-          } catch (InterruptedException e) {
-            e.printStackTrace();
-          }
-        }
-      }
-    }).start();
+    logger.info("Added entry " + status + " " + file + " from " + from +
+    		" to " + to);
   }
 
-  public void updateProgressBar(String file, int part) {
+  public void updateProgressBar(String file, float part) {
     int index = allFiles.get(file);
     JProgressBar progressBar = progressBars.get(index);
 
     // Increase the value of the progress bar
-    int oldValue = progressBar.getValue();
+    float oldValue = progressBarValues.get(index);
 
-    progressBar.setValue(oldValue + part);
-    progressBar.setString(oldValue + part + "%");
-    if (oldValue + part == 100) {
+    float newValue = oldValue + part;
+    if (newValue > 100) {
+    	newValue = 100;
+    }
+
+    progressBarValues.set(index, newValue);
+
+    progressBar.setValue((int)newValue);
+    progressBar.setString((int)newValue + "%");
+    if (newValue == 100) {
       // Change state if completed
       model.setValueAt("Completed.", index, 4);
     }
 
     // Must update the table
     model.fireTableChanged(new TableModelEvent(model, index));
+
+    logger.info("Received " + part + " of " + file);
   }
 
   public int getProgress(String file) {

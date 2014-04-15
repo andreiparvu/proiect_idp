@@ -5,6 +5,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import main.Mediator;
+
 import org.yaml.snakeyaml.Yaml;
 
 public class EchoWorker implements IWorker {
@@ -12,10 +14,11 @@ public class EchoWorker implements IWorker {
 	private List<ServerDataEvent> queue = new LinkedList<ServerDataEvent>();
 	private Map <SocketChannel, StringBuffer> buffers = new HashMap<SocketChannel, StringBuffer>();
 	private NioServer master;
-
+	private Mediator med;
+	
 	// at construction phase
-	public EchoWorker() {
-		
+	public EchoWorker(Mediator med) {
+		this.med = med;
 	}
 	
 	public void processData(NioServer server, SocketChannel socket, byte[] data, int count) {
@@ -71,16 +74,6 @@ public class EchoWorker implements IWorker {
 	private void processLastBuffers() {
 		Yaml yaml = new Yaml();
 		
-//		for (SocketChannel key : buffers.keySet()) {
-//			StringBuffer sb = buffers.get(key);
-//			if (sb.length() != 0) {
-//				System.out.println(sb);
-//				IMessage message = (IMessage) yaml.load(sb.toString());
-//				message.allowProcessing(this, new ServerDataEvent(master, key, null));
-//				sb.delete(0, sb.length());
-//			}
-//		}
-		
 		for (SocketChannel key : buffers.keySet()) {
 			StringBuffer sb = buffers.get(key);
 			if (sb.length() != 0) {
@@ -135,7 +128,7 @@ public class EchoWorker implements IWorker {
 			owner.fileContents.put(message.fd.filename, new FileData(message.fd));
 		}
 		
-		for (int i = 0; i < message.fd.getNChunks(); i++)
+		for (int i = 0; i < message.fd.getNChunks(); i++) {
 			try {
 				String filename = message.fd.filename;
 				
@@ -143,6 +136,7 @@ public class EchoWorker implements IWorker {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		}
 	}
 	
 	@Override
@@ -164,6 +158,10 @@ public class EchoWorker implements IWorker {
 		
 		synchronized (owner.fileContents) {
 			owner.fileContents.get(message.filename).storeData(message.chunkIndex, message.data);
+			
+			FileData fd = owner.fileContents.get(message.filename);
+			
+			med.addFilePart(message.filename, (float)fd.fd.chunkSize * 100 / fd.fd.totalSize);
 		}
 	}
 }
