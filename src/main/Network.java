@@ -1,7 +1,6 @@
 package main;
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -65,5 +64,13 @@ public class Network {
         }
       }
     });
+  }
+  
+  public Client getClient() {
+  	return client;
+  }
+  
+  public Mediator getMediator() {
+  	return med;
   }
 }

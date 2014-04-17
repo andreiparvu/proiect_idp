@@ -10,6 +10,8 @@ public class DownloadTest extends TestCase {
   Network net1;
   Network net2;
 
+  static String ip = "127.0.0.1";
+  
   protected void setUp() {
     net1 = new Network(new Mediator(), "127.0.0.1", 8000);
     net2 = new Network(new Mediator(), "127.0.0.1", 9000);
@@ -22,11 +24,14 @@ public class DownloadTest extends TestCase {
 
     net1.publishFile(f);
 
-    net2.startDownload("127.0.0.1", port, file);
+    net2.startDownload(ip, port, file);
 
     try {
       Thread.sleep(timeout);
-    } catch (Exception ex) {}
+    } catch (InterruptedException ex) {
+    	ex.printStackTrace();
+    	fail();
+    }
 
     File newFile = new File(file);
     assertTrue(newFile.exists());

@@ -39,7 +39,7 @@ public class MainWindow extends JFrame {
   static Logger logger = Logger.getLogger(MainWindow.class);
   public static FileAppender appender;
 
-  class MyTableModel extends DefaultTableModel {
+  public static class MyTableModel extends DefaultTableModel {
 
     private static final long serialVersionUID = 3316004335920963650L;
 

@@ -37,8 +37,8 @@ public class EventTable extends JTable {
 
     progressBars = new ArrayList<>();
     progressBarValues = new ArrayList<>();
-    allFiles = new HashMap<>();
-    allData = new ArrayList<>();
+    allFiles = new HashMap<String, Integer>();
+    allData = new ArrayList<Object[]>();
 
     // Set the renderer for the progress bar column
     getColumnModel().getColumn(3).setCellRenderer(new ProgressBarRenderer());
@@ -133,7 +133,11 @@ public class EventTable extends JTable {
   }
 
   public int getProgress(String file) {
-    int index = allFiles.get(file);
+    Integer index = allFiles.get(file);
+    
+    if (index == null)
+    	return 0;
+    
     JProgressBar progressBar = progressBars.get(index);
     return progressBar.getValue();
   }

@@ -202,4 +202,21 @@ public class Client extends NioServer implements IClient {
 		// spit new file cuz I have all I need
 		return fileContents.get(filename).newFile();
 	}	
+	
+	public float getProgress(String filename) {
+		FileData fData =  fileContents.get(filename);
+		
+		if (fData == null)
+			return 0;
+		
+		int chunksLeft = fData.chunksLeft;
+		int chunkSize = fData.fd.chunkSize;
+		long totalSize = fData.fd.totalSize;
+		int chunksDone = fData.data.length - chunksLeft;
+		long sizeDone = chunksDone * chunkSize;
+		if (sizeDone > totalSize)
+			sizeDone = totalSize;
+		
+		return 100.0f * sizeDone / totalSize;
+	}
 }

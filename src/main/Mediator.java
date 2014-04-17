@@ -101,4 +101,12 @@ public class Mediator {
       eventTable.updateProgressBar(name, quantity);
     }
   }
+  
+  public int getProgress(String filename) {
+  	return eventTable.getProgress(filename);
+  }
+  
+  public EventTable getTable() {
+  	return eventTable;
+  }
 }
