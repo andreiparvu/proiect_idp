@@ -40,6 +40,7 @@ public class GUITest extends TestCase {
     assertTrue(f.exists());
     source.publishFile(f);
 
+    // table is the event table of the *destination*
     if (source == net1)
     	table = e2;
     else if (source == net2)
@@ -47,10 +48,10 @@ public class GUITest extends TestCase {
     else
     	fail("Weird network, neither source nor dest from setup()!");
     
+    // mark the download
     table.addEntry("gigi", file, true);
     dest.startDownload(ip, port, file);
 
-    
     Thread thread = new Thread(new Runnable() {
     	@Override
     	public void run() {
@@ -59,13 +60,17 @@ public class GUITest extends TestCase {
 
   			try {
   				Thread.sleep(1000);
+  				
+  				// repeated check at random moments
 	    		while(totalTime > 10) {
 	    				long time = Math.abs(random.nextLong() % totalTime);
 	    				Thread.sleep(time);
-	    				// test
+	    				
+	    				// test whether the progressBar shows the real progress
 	    				int realProgress = (int)dest.getClient().getProgress(f.getName());
 	    				int uiProgress = dest.getMediator().getProgress(f.getName());
 	    				
+	    				// a 0 progress in UI means that either the file is complete or not yet started
 	    				if (realProgress == 100 && uiProgress == 0) {
 	    			    File newFile = new File(file);
 	    			    assertTrue(newFile.exists());
