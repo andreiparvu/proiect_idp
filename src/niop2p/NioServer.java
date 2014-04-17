@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.nio.channels.ClosedSelectorException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
@@ -18,7 +19,9 @@ import java.util.Map;
 import main.MainWindow;
 import main.Mediator;
 
+import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
 import org.yaml.snakeyaml.Yaml;
 
 public class NioServer implements Runnable {
@@ -45,6 +48,9 @@ public class NioServer implements Runnable {
 	Map<SocketChannel, List<ByteBuffer>> pendingData = new HashMap<SocketChannel, List<ByteBuffer>>();
 
 	static Logger logger = Logger.getLogger(NioServer.class);
+	static {
+		logger.addAppender(new ConsoleAppender(new PatternLayout()));
+	}
 	
 	public NioServer(String address, int port, Mediator med) throws IOException {
 		this (InetAddress.getByName(address), port, new EchoWorker(med));
@@ -82,6 +88,15 @@ public class NioServer implements Runnable {
 		return socketSelector;
 	}
 
+	public void close() {
+		try {
+			this.selector.close();
+			this.serverChannel.close();
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+	}
+	
 	public void run() {
 		while (true) {
 			try {
@@ -122,6 +137,8 @@ public class NioServer implements Runnable {
 						write(key);
 					}
 				}
+			} catch (ClosedSelectorException ex) {
+				break;
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

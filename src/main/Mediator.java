@@ -97,6 +97,8 @@ public class Mediator {
   }
 
   public void addFilePart(String name, float quantity) {
-    eventTable.updateProgressBar(name, quantity);
+    if (eventTable != null) {
+      eventTable.updateProgressBar(name, quantity);
+    }
   }
 }

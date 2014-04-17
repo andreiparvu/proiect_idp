@@ -18,9 +18,9 @@ import org.apache.log4j.PatternLayout;
 
 public class MainWindow extends JFrame {
   static MainWindow frame;
-  static String curUser;
-  static String curIP;
-  static int curPort;
+  public static String curUser;
+  public static String curIP;
+  public static int curPort;
 
   Mediator mediator;
 
@@ -143,24 +143,16 @@ public class MainWindow extends JFrame {
   }
 
   public static void main(String[] args) {
-//    curUser = args[0];
-//    curIP = args[1];
-//    curPort = Integer.parseInt(args[2]);
-  	
-  	curUser = "daniel";
-  	curIP = "127.0.0.1";
-  	curPort = 9000;
-  	
-//  	curUser = "andrei";
-//  	curIP = "127.0.0.1";
-//  	curPort = 8000;
-  	
+    curUser = args[0];
+    curIP = args[1];
+    curPort = Integer.parseInt(args[2]);
+
     try {
     	File logFile = new File(LOGS_DIR + "/" + curUser + ".log");
     	if (!logFile.exists()) {
     		logFile.createNewFile();
     	}
-    	
+
     	appender = new FileAppender(new PatternLayout(), logFile.getAbsolutePath() , false);
   	} catch (IOException ex) {
   		ex.printStackTrace();

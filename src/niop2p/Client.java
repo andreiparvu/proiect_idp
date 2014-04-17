@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.nio.channels.ClosedSelectorException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
@@ -15,7 +16,9 @@ import java.util.Map;
 import main.MainWindow;
 import main.Mediator;
 
+import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
 import org.yaml.snakeyaml.Yaml;
 
 public class Client extends NioServer implements IClient {
@@ -24,6 +27,9 @@ public class Client extends NioServer implements IClient {
 	Map <String, FileData> fileContents = new HashMap <String, FileData> ();
 	
 	static Logger logger = Logger.getLogger(Client.class);
+	static {
+		logger.addAppender(new ConsoleAppender(new PatternLayout()));
+	}
 	
 	public Client(String clientHost, int clientPort, Mediator med) throws IOException {
 		this(InetAddress.getByName(clientHost), clientPort, new EchoWorker(med));
@@ -33,7 +39,7 @@ public class Client extends NioServer implements IClient {
 			throws IOException {
 		// call super-constructor
 		super(myAddress, myPort, worker);
-		logger.addAppender(MainWindow.appender);
+    logger.addAppender(MainWindow.appender);
 	}
 
 	private SocketChannel initiateConnection(InetAddress address, int port) throws IOException {
@@ -103,6 +109,8 @@ public class Client extends NioServer implements IClient {
 						write(key);
 					}
 				}
+			} catch (ClosedSelectorException ex) {
+				break;
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

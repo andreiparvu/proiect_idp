@@ -1,13 +1,16 @@
 package main;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.log4j.Logger;
-
 import niop2p.Client;
+
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
 
 public class Network {
   Mediator med;
@@ -15,11 +18,16 @@ public class Network {
   private ExecutorService pool = Executors.newCachedThreadPool();
 
   static Logger logger = Logger.getLogger(Network.class);
+  static {
+    logger.addAppender(new ConsoleAppender(new PatternLayout()));
+  }
 
   public Network(Mediator med, String myAddress, int myPort) {
     this.med = med;
-    logger.addAppender(MainWindow.appender);
-    
+    if (MainWindow.appender != null) {
+    	logger.addAppender(MainWindow.appender);
+    }
+
     try {
       client = new Client(myAddress, myPort, med);
       pool.execute(client);
@@ -27,6 +35,10 @@ public class Network {
       logger.error("Error in creating client");
       ex.printStackTrace();
     }
+  }
+
+  public void close() {
+  	client.close();
   }
 
   public void publishFile(File file) {
