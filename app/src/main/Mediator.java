@@ -17,8 +17,14 @@ public class Mediator {
   public static final String DOWNLOADING_FILE = "Downloading file ";
 
   private String status = "Idle";
+	private String curUser;
 
-  public Mediator() {
+	public Mediator() {
+		this(null);
+	}
+	
+  public Mediator(String curUser) {
+  	this.curUser = curUser;
   }
 
   // Register the components which interact with the mediator
@@ -76,6 +82,10 @@ public class Mediator {
     return "some status";
   }
 
+  public String getUser() {
+  	return curUser;
+  }
+  
   public void setStatus(String genericMessage, String subject) {
     status = genericMessage + subject;
     updateStatus();

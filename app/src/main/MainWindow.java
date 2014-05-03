@@ -1,8 +1,6 @@
 package main;
 import java.io.File;
 import java.io.IOException;
-import java.util.Scanner;
-import java.util.StringTokenizer;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
@@ -53,7 +51,7 @@ public class MainWindow extends JFrame {
   }
 
   public MainWindow() {
-    mediator = new Mediator();
+    mediator = new Mediator(curUser);
 
     // Create and register web service, user list, file list and event table
     WebServiceClient webServiceClient = new WebServiceClient(mediator);
@@ -102,21 +100,9 @@ public class MainWindow extends JFrame {
     logger.info("Created the GUI.");
 
     try {
-      Scanner s = new Scanner(new File(curUser + ".txt"));
-      while (s.hasNextLine()) {
-        String line = s.nextLine();
-
-        StringTokenizer st = new StringTokenizer(line, "=");
-
-        String prop = st.nextToken(), value = st.nextToken();
-
-        System.out.println(prop + value);
-        if (prop.compareTo("user") == 0) {
-          webServiceClient.newUser(value, st.nextToken(), Integer.parseInt(st.nextToken()));
-        }
-      }
-
-      s.close();
+    	// publish files etc
+    	webServiceClient.refresh();
+    	
       File dir = new File(curUser + "/");
       for (File curFile : dir.listFiles()) {
         if (!curFile.isDirectory()) {
@@ -143,10 +129,14 @@ public class MainWindow extends JFrame {
   }
 
   public static void main(String[] args) {
-    curUser = args[0];
-    curIP = args[1];
-    curPort = Integer.parseInt(args[2]);
+//    curUser = args[0];
+//    curIP = args[1];
+//    curPort = Integer.parseInt(args[2]);
 
+  	curUser = "daniel";
+  	curIP = "127.0.0.1";
+  	curPort = 43297;
+  	
     try {
     	File logFile = new File(LOGS_DIR + "/" + curUser + ".log");
     	if (!logFile.exists()) {
