@@ -61,8 +61,29 @@ public class WebServiceClient {
   public void refresh() throws IOException {
   	if(mock)
   		mockRefresh();
+  	else
+  		doRefresh();
   }
   
+  /**
+   * Gets the data from the web service. Careful with the URI.<br>
+   * 
+   * Used for:
+   * 	<li> FileListGetter<br>
+   * 		http://localhost:8080/IDPWebService/getFileList?user=username <br>
+   * 		Returns the list of files as "file1|file2|...|filen" <br>
+   *	<li> FilePublisher<br>
+   *		http://localhost:8080/IDPWebService/publishFile?user=username&file=filename<br>
+   *		Returns "OK" if ok :))
+   *	<li> UserListServlet<br>
+   *		http://localhost:8080/IDPWebService/getUserList<br>
+   *		Returns a String in the same format as the hardcoded files
+   *
+   * @param source 
+   * 	in the form http://localhost:8080/IDPWebService/command?key1=value1&key2=value2...
+   * @return
+   * 	the reply from the servlet as a String
+   */
   public String getContentsFrom(String source) {
   	URL url;
 		InputStream is = null;
@@ -95,6 +116,26 @@ public class WebServiceClient {
   
   private void mockRefresh() throws IOException {
   	Scanner s = new Scanner(new File(med.getUser() + ".txt"));
+    while (s.hasNextLine()) {
+      String line = s.nextLine();
+
+      StringTokenizer st = new StringTokenizer(line, "=");
+
+      String prop = st.nextToken(), value = st.nextToken();
+
+      System.out.println(prop + value);
+      if (prop.compareTo("user") == 0) {
+        newUser(value, st.nextToken(), Integer.parseInt(st.nextToken()));
+      }
+    }
+
+    s.close();
+  }
+  
+  private void doRefresh() {
+  	String contents = getContentsFrom("http://localhost:8080/IDPWebService/getUserList");
+  	Scanner s = new Scanner(contents);
+  	
     while (s.hasNextLine()) {
       String line = s.nextLine();
 
