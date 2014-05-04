@@ -1,8 +1,8 @@
 package main;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.IOException;
-import java.util.Scanner;
-import java.util.StringTokenizer;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
@@ -53,12 +53,10 @@ public class MainWindow extends JFrame {
   }
 
   public MainWindow() {
+    super(curUser);
     mediator = new Mediator();
 
     // Create and register web service, user list, file list and event table
-    WebServiceClient webServiceClient = new WebServiceClient(mediator);
-    mediator.registerWebServiceClient(webServiceClient);
-
     Network network = new Network(mediator, curIP, curPort);
     mediator.registerNetwork(network);
 
@@ -69,6 +67,8 @@ public class MainWindow extends JFrame {
     userList = new UserList(mediator, new DefaultListModel<String>()); 
     JScrollPane userScrollPane = new JScrollPane(userList);
 
+    WebServiceClient webServiceClient = new WebServiceClient(mediator, curUser, curIP, curPort);
+    mediator.registerWebServiceClient(webServiceClient);
     // Create a split pane and put "top" (a split pane)
     // and JLabel instance in it.
     String[] columnNames = {"Source", "Destination", "File Name", "Progress", "Status"};
@@ -101,32 +101,9 @@ public class MainWindow extends JFrame {
 
     logger.info("Created the GUI.");
 
-    try {
-      Scanner s = new Scanner(new File(curUser + ".txt"));
-      while (s.hasNextLine()) {
-        String line = s.nextLine();
-
-        StringTokenizer st = new StringTokenizer(line, "=");
-
-        String prop = st.nextToken(), value = st.nextToken();
-
-        System.out.println(prop + value);
-        if (prop.compareTo("user") == 0) {
-          webServiceClient.newUser(value, st.nextToken(), Integer.parseInt(st.nextToken()));
-        }
-      }
-
-      s.close();
-      File dir = new File(curUser + "/");
-      for (File curFile : dir.listFiles()) {
-        if (!curFile.isDirectory()) {
-          mediator.addCurrentFile(curFile);
-        }
-      }
-      
-      mediator.statusText.setText("Current user: " + curUser);
-    } catch (IOException ex) {
-      ex.printStackTrace();
+    File uploadFolder = new File(curUser);
+    for (File file : uploadFolder.listFiles()) {
+      mediator.addCurrentFile(file);
     }
   }
 
@@ -140,6 +117,18 @@ public class MainWindow extends JFrame {
     frame.pack();
     frame.setSize(WIDTH, HEIGHT);
     frame.setVisible(true);
+
+    frame.addWindowListener(new WindowListener() {
+      public void windowDeactivated(WindowEvent e) {}
+      public void windowClosing(WindowEvent e) {
+        frame.mediator.removeUser(curUser);
+      }
+      public void windowClosed(WindowEvent e) { }
+      public void windowOpened(WindowEvent e) { }
+      public void windowDeiconified(WindowEvent e) {}
+      public void windowIconified(WindowEvent e) {}
+      public void windowActivated(WindowEvent e) {}
+    });
   }
 
   public static void main(String[] args) {
@@ -148,15 +137,15 @@ public class MainWindow extends JFrame {
     curPort = Integer.parseInt(args[2]);
 
     try {
-    	File logFile = new File(LOGS_DIR + "/" + curUser + ".log");
-    	if (!logFile.exists()) {
-    		logFile.createNewFile();
-    	}
+      File logFile = new File(LOGS_DIR + "/" + curUser + ".log");
+      if (!logFile.exists()) {
+        logFile.createNewFile();
+      }
 
-    	appender = new FileAppender(new PatternLayout(), logFile.getAbsolutePath() , false);
-  	} catch (IOException ex) {
-  		ex.printStackTrace();
-  	}
+      appender = new FileAppender(new PatternLayout(), logFile.getAbsolutePath() , false);
+    } catch (IOException ex) {
+      ex.printStackTrace();
+    }
     logger.addAppender(appender);
 
     // Schedule a job for the event-dispatching thread:

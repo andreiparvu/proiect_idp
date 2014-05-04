@@ -102,7 +102,7 @@ public class EventTable extends JTable {
     allFiles.put(file, progressBars.size() - 1);
 
     logger.info("Added entry " + status + " " + file + " from " + from +
-    		" to " + to);
+        " to " + to);
   }
 
   public void updateProgressBar(String file, float part) {
@@ -114,7 +114,7 @@ public class EventTable extends JTable {
 
     float newValue = oldValue + part;
     if (newValue > 100) {
-    	newValue = 100;
+      newValue = 100;
     }
 
     progressBarValues.set(index, newValue);
@@ -134,10 +134,10 @@ public class EventTable extends JTable {
 
   public int getProgress(String file) {
     Integer index = allFiles.get(file);
-    
+
     if (index == null)
-    	return 0;
-    
+      return 0;
+
     JProgressBar progressBar = progressBars.get(index);
     return progressBar.getValue();
   }

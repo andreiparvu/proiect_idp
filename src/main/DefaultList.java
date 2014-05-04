@@ -15,12 +15,15 @@ public abstract class DefaultList extends JList<String> {
     this.model = model;
   }
 
-  public void addElement(String user) {
-    model.addElement(user);
+  public void addElement(String el) {
+    model.addElement(el);
   }
 
-  public void removeElement(String user) {
-    model.removeElement(user);
+  public boolean hasElement(String el) {
+    return model.indexOf(el) != -1;
+  }
+  public void removeElement(String el) {
+    model.removeElement(el);
   }
 
   public void removeElements() {

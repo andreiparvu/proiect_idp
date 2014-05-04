@@ -48,13 +48,12 @@ public class Mediator {
     updateStatus();
   }
 
-  // Methods of communicating with the mediator
-  public void addUser(String userName) {
-    this.userList.addElement(userName);
-  }
+  public void setUsers(ArrayList<String> userNames) {
+    this.userList.removeElements();
 
-  public void delUser(String userName) {
-    this.userList.removeElement(userName);
+    for (String userName : userNames) {
+      this.userList.addElement(userName);
+    }
   }
 
   public void addCurrentFile(File file) {
@@ -62,7 +61,13 @@ public class Mediator {
     webServiceClient.publishFile(file);
   }
 
+  public void removeUser(String user) {
+    this.webServiceClient.removeUser(user);
+  }
+
   public void showFiles(String userName) {
+    this.webServiceClient.getUsers();
+
     ArrayList<String> files = this.webServiceClient.getFilesFromUser(userName);
 
     fileList.removeElements();
@@ -101,12 +106,12 @@ public class Mediator {
       eventTable.updateProgressBar(name, quantity);
     }
   }
-  
+
   public int getProgress(String filename) {
-  	return eventTable.getProgress(filename);
+    return eventTable.getProgress(filename);
   }
-  
+
   public EventTable getTable() {
-  	return eventTable;
+    return eventTable;
   }
 }

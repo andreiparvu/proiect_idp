@@ -24,7 +24,7 @@ public class Network {
   public Network(Mediator med, String myAddress, int myPort) {
     this.med = med;
     if (MainWindow.appender != null) {
-    	logger.addAppender(MainWindow.appender);
+      logger.addAppender(MainWindow.appender);
     }
 
     try {
@@ -37,7 +37,7 @@ public class Network {
   }
 
   public void close() {
-  	client.close();
+    client.close();
   }
 
   public void publishFile(File file) {
@@ -65,12 +65,12 @@ public class Network {
       }
     });
   }
-  
+
   public Client getClient() {
-  	return client;
+    return client;
   }
-  
+
   public Mediator getMediator() {
-  	return med;
+    return med;
   }
 }
