@@ -23,8 +23,8 @@ public class GUITest extends TestCase {
   protected void setUp() {
   	String[] columnNames = {"Source", "Destination", "File Name", "Progress", "Status"};
   	
-  	med1 = new Mediator();
-  	med2 = new Mediator();
+  	med1 = new Mediator("daniel");
+  	med2 = new Mediator("andrei");
     net1 = new Network(med1, ip, 8000);
     
     e1 = new EventTable(med1, new MainWindow.MyTableModel(columnNames));

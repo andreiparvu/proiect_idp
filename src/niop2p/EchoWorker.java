@@ -1,4 +1,5 @@
 package niop2p;
+import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -123,14 +124,14 @@ public class EchoWorker implements IWorker {
 		Client owner = (Client)event.server;
 		
 		synchronized (owner.fileContents) {
-			owner.fileContents.put(message.fd.filename, new FileData(message.fd));
+			owner.fileContents.put(message.fd.filename, new FileData(message.fd, med.getDownloadPath()));
 		}
 		
 		for (int i = 0; i < message.fd.getNChunks(); i++) {
 			try {
 				String filename = message.fd.filename;
 				
-				((Client)event.server).sendMessage(event.socket, new ChunkRequestMessage(filename,i));
+				((Client)event.server).sendMessage(event.socket, new ChunkRequestMessage(filename,i, owner.myPort));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -140,6 +141,17 @@ public class EchoWorker implements IWorker {
 	@Override
 	public void process(ChunkRequestMessage message, ServerDataEvent event) {
 		Client owner = (Client)event.server;
+		FileData fd = owner.fileContents.get(message.filename);
+		
+		try{
+			InetSocketAddress sockAddress = ((InetSocketAddress)event.socket.getRemoteAddress());
+			String ip = sockAddress.getHostString();
+			int port = message.port;
+			System.out.println("being requested by " + port);
+			med.startUpload(ip, port, message.filename);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 		synchronized (owner.fileContents) {
 			byte[] data = owner.fileContents.get(message.filename).getChunkData(message.chunkIndex);
@@ -148,6 +160,8 @@ public class EchoWorker implements IWorker {
 			ChunkReplyMessage reply = new ChunkReplyMessage(message.filename, message.chunkIndex, copy);
 			owner.sendMessage(event.socket, reply);
 		}
+		
+		med.addFilePart(message.filename, (float)fd.fd.chunkSize * 100 / fd.fd.totalSize);
 	}
 	
 	@Override

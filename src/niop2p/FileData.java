@@ -16,19 +16,21 @@ public class FileData {
   FileDescription fd;
   byte[][] data;
   int chunksLeft;
-
+  String path;
+  
   static Logger logger = Logger.getLogger(FileData.class);
 
   public FileData(File file) {
-    this(new FileDescription(file));
+    this(new FileDescription(file), "");
     populateData(file);
     chunksLeft = 0;
 
     logger.addAppender(MainWindow.appender);
   }
 
-  public FileData(FileDescription fileDescription) {
+  public FileData(FileDescription fileDescription, String path) {
     fd = fileDescription;
+    this.path = path;
     chunksLeft = (int) fd.getNChunks();
     data = new byte[chunksLeft][fd.chunkSize];
 
@@ -63,7 +65,7 @@ public class FileData {
 
   public void storeData(int chunkIndex, byte[] data) {
     try {
-      RandomAccessFile raf = new RandomAccessFile(fd.filename, "rw");
+      RandomAccessFile raf = new RandomAccessFile(path + "/" + fd.filename, "rw");
       FileChannel fc = raf.getChannel();
       MappedByteBuffer mb;
       mb = fc.map(FileChannel.MapMode.READ_WRITE, 
@@ -83,6 +85,7 @@ public class FileData {
   }
 
   public File newFile() {
-    return new File(fd.filename);
+  	System.out.println("creating new file " + path + "/" + fd.filename);
+  	return new File (path + "/" + fd.filename);
   }
 }

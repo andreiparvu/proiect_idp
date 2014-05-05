@@ -12,13 +12,16 @@ public class Mediator {
   WebServiceClient webServiceClient;
   EventTable eventTable;
   JTextArea statusText;
-
+  String curUser;
+  
   public static final String GETING_FILES_FROM = "Getting files from ";
   public static final String DOWNLOADING_FILE = "Downloading file ";
+  public static final String UPLOADING_FILE = "Uploading file ";
 
   private String status = "Idle";
 
-  public Mediator() {
+  public Mediator(String user) {
+  	curUser = user;
   }
 
   // Register the components which interact with the mediator
@@ -101,9 +104,17 @@ public class Mediator {
         webServiceClient.getPort(this.userList.selectedUser), this.fileList.selectedFile);
   }
 
-  public void addFilePart(String name, float quantity) {
+  public void startUpload(String ip, int port, String filename) {
+  	String user = webServiceClient.getUser(ip, port);
+  	
+  	setStatus(UPLOADING_FILE, "\"" + filename + "\"" + " to " + user);
+  	
+  	eventTable.addEntry(user, filename, false);
+  }
+  
+  public void addFilePart(String filename, float quantity) {
     if (eventTable != null) {
-      eventTable.updateProgressBar(name, quantity);
+      eventTable.updateProgressBar(filename, quantity);
     }
   }
 
@@ -113,5 +124,9 @@ public class Mediator {
 
   public EventTable getTable() {
     return eventTable;
+  }
+  
+  public String getDownloadPath() {
+  	return curUser;
   }
 }

@@ -54,7 +54,7 @@ public class MainWindow extends JFrame {
 
   public MainWindow() {
     super(curUser);
-    mediator = new Mediator();
+    mediator = new Mediator(curUser);
 
     // Create and register web service, user list, file list and event table
     Network network = new Network(mediator, curIP, curPort);

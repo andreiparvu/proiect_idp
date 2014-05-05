@@ -13,8 +13,8 @@ public class DownloadTest extends TestCase {
   static String ip = "127.0.0.1";
   
   protected void setUp() {
-    net1 = new Network(new Mediator(), "127.0.0.1", 8000);
-    net2 = new Network(new Mediator(), "127.0.0.1", 9000);
+    net1 = new Network(new Mediator("daniel"), "127.0.0.1", 8000);
+    net2 = new Network(new Mediator("andrei"), "127.0.0.1", 9000);
   }
 
   public void doTest(String file, Network net1, Network net2, int port, long timeout) {

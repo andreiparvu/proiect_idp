@@ -25,8 +25,10 @@ public class FileList extends DefaultList {
     public void mouseClicked(MouseEvent e) {
       int index = FileList.this.locationToIndex(e.getPoint());
 
+      if (index < 0)
+      	return;
+      
       selectedFile = model.elementAt(index);
-
       // A file has been selected - start download
       med.startDownload();
     }

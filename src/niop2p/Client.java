@@ -165,7 +165,8 @@ public class Client extends NioServer implements IClient {
   }
 
   @Override
-  public File retrieveFile(InetAddress address, int port, String filename) throws IOException {
+  public File retrieveFile(InetAddress address, int port, 
+  		String downloadPath, String filename) throws IOException {
     FdQueryMessage message = new FdQueryMessage(filename);
     int nChunks = Integer.MAX_VALUE;
 

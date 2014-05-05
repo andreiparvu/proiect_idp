@@ -182,7 +182,7 @@ public class NioServer implements Runnable {
 		if (numRead == -1) {
 			// Remote entity shut the socket down cleanly. Do the
 			// same from our end and cancel the channel.
-			logger.info("Someone closed cleanlythe server instance.");
+			logger.info("Someone closed cleanly the server instance.");
 			key.channel().close();
 			key.cancel();
 			return;

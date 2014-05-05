@@ -1,12 +1,10 @@
 package main;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Scanner;
 import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
@@ -45,7 +43,7 @@ public class WebServiceClient {
 
   private String connect(String uri) {
     try {
-      URL url = new URL("http://localhost:8080/IDPWebService/" + uri);
+      URL url = new URL(BASE_URL + uri);
       HttpURLConnection connection = (HttpURLConnection)url.openConnection();
       connection.setRequestMethod("GET");
 
@@ -119,6 +117,26 @@ public class WebServiceClient {
     return ports.get(user);
   }
 
+  public String getUser(String ip, int port) {
+  	int count = 0;
+  	String correctUser = null;
+  	
+  	for (String user : ips.keySet())
+  		if (ips.get(user).equals(ip)) {
+  			count ++;
+  			correctUser = user;
+  		}
+  	
+  	if (count == 1)
+  		return correctUser;
+  	
+  	for (String user : ports.keySet())
+  		if (ports.get(user) == port)
+  			return user;
+  	
+  	return null;
+  }
+  
   public void publishFile(File f) {
     connect("publishFile?user=" + curUser + "&file=" + f.getName());
   }

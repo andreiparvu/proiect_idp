@@ -54,6 +54,6 @@ public interface IClient {
      *                      {@link Exception#Exception(String, Throwable)} pentru detalii)
      *  
      */
-		File retrieveFile(InetAddress address, int port, String filename)
-				throws IOException;
+    File retrieveFile(InetAddress address, int port, 
+    		String downloadPath, String filename) throws IOException;
 }
