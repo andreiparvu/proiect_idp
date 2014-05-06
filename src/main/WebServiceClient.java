@@ -10,7 +10,6 @@ import java.util.StringTokenizer;
 import org.apache.log4j.Logger;
 
 
-// Mock class for the moment, will implement later
 public class WebServiceClient {
   Mediator med;
 
@@ -27,18 +26,16 @@ public class WebServiceClient {
     this.med = med;
     this.curUser = user;
 
-    connect("addUser?user=" + user + "&ip=" + ip + "&port=" + port);
+    addUser(user, ip, port);
+
     getUsers();
 
     logger.addAppender(MainWindow.appender);
     logger.info("WebServiceClient created and registered.");
   }
 
-  public void newUser(String user, String ip, int port) {
-    ips.put(user, ip);
-    ports.put(user, port);
-
-    logger.info("Added user " + user + " with " + ip + ":" + port);
+  public void addUser(String user, String ip, int port) {
+    connect("addUser?user=" + user + "&ip=" + ip + "&port=" + port);
   }
 
   private String connect(String uri) {
@@ -118,25 +115,25 @@ public class WebServiceClient {
   }
 
   public String getUser(String ip, int port) {
-  	int count = 0;
-  	String correctUser = null;
-  	
-  	for (String user : ips.keySet())
-  		if (ips.get(user).equals(ip)) {
-  			count ++;
-  			correctUser = user;
-  		}
-  	
-  	if (count == 1)
-  		return correctUser;
-  	
-  	for (String user : ports.keySet())
-  		if (ports.get(user) == port)
-  			return user;
-  	
-  	return null;
+    int count = 0;
+    String correctUser = null;
+
+    for (String user : ips.keySet())
+      if (ips.get(user).equals(ip)) {
+        count ++;
+        correctUser = user;
+      }
+
+    if (count == 1)
+      return correctUser;
+
+    for (String user : ports.keySet())
+      if (ports.get(user) == port)
+        return user;
+
+    return null;
   }
-  
+
   public void publishFile(File f) {
     connect("publishFile?user=" + curUser + "&file=" + f.getName());
   }

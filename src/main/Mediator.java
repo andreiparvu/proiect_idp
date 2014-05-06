@@ -4,6 +4,10 @@ import java.util.ArrayList;
 
 import javax.swing.JTextArea;
 
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
+
 
 public class Mediator {
   UserList userList;
@@ -13,15 +17,24 @@ public class Mediator {
   EventTable eventTable;
   JTextArea statusText;
   String curUser;
-  
+
   public static final String GETING_FILES_FROM = "Getting files from ";
   public static final String DOWNLOADING_FILE = "Downloading file ";
   public static final String UPLOADING_FILE = "Uploading file ";
 
   private String status = "Idle";
 
+  static Logger logger = Logger.getLogger(Network.class);
+  static {
+    logger.addAppender(new ConsoleAppender(new PatternLayout()));
+  }
+
   public Mediator(String user) {
-  	curUser = user;
+    curUser = user;
+
+    if (MainWindow.appender != null) {
+      logger.addAppender(MainWindow.appender);
+    }
   }
 
   // Register the components which interact with the mediator
@@ -64,6 +77,14 @@ public class Mediator {
     webServiceClient.publishFile(file);
   }
 
+  public void addUser(String user, String ip, int port) {
+    this.webServiceClient.addUser(user, ip, port);
+  }
+
+  public void getUsers() {
+    this.webServiceClient.getUsers();
+  }
+
   public void removeUser(String user) {
     this.webServiceClient.removeUser(user);
   }
@@ -80,10 +101,6 @@ public class Mediator {
     }
   }
 
-  public String getStatus() {
-    return "some status";
-  }
-
   public void setStatus(String genericMessage, String subject) {
     status = genericMessage + subject;
     updateStatus();
@@ -95,6 +112,14 @@ public class Mediator {
   }
 
   public void startDownload() {
+    File f = new File(getDownloadPath() + "/" + this.fileList.selectedFile);
+    if (f.exists()) {
+      logger.info("File " + this.fileList.selectedFile + " already exists.");
+      setStatus("File already in folder. Please delete.", "");
+
+      return;
+    }
+
     setStatus(DOWNLOADING_FILE, "\"" + this.fileList.selectedFile + "\"" 
         + " from " + this.userList.selectedUser);
     eventTable.addEntry(this.userList.selectedUser, this.fileList.selectedFile,
@@ -105,13 +130,13 @@ public class Mediator {
   }
 
   public void startUpload(String ip, int port, String filename) {
-  	String user = webServiceClient.getUser(ip, port);
-  	
-  	setStatus(UPLOADING_FILE, "\"" + filename + "\"" + " to " + user);
-  	
-  	eventTable.addEntry(user, filename, false);
+    String user = webServiceClient.getUser(ip, port);
+
+    setStatus(UPLOADING_FILE, "\"" + filename + "\"" + " to " + user);
+
+    eventTable.addEntry(user, filename, false);
   }
-  
+
   public void addFilePart(String filename, float quantity) {
     if (eventTable != null) {
       eventTable.updateProgressBar(filename, quantity);
@@ -125,8 +150,8 @@ public class Mediator {
   public EventTable getTable() {
     return eventTable;
   }
-  
+
   public String getDownloadPath() {
-  	return curUser;
+    return curUser;
   }
 }

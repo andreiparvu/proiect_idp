@@ -33,9 +33,9 @@ public class MainWindow extends JFrame {
   private static final int HEIGHT = 480;
   private static final int STATUS_HEIGHT = 60;
   private static final int REF_BTN_WIDTH = 160;
-  
+
   private static final String LOGS_DIR = "logs";
-  
+
   private JList<String> fileList;
 
   private JList<String> userList;
@@ -93,67 +93,51 @@ public class MainWindow extends JFrame {
 
     JTextArea statusText = new JTextArea();
     mediator.registerStatusArea(statusText);
-    
+
     JButton refreshBtn = new JButton();
     refreshBtn.setSize(REF_BTN_WIDTH, STATUS_HEIGHT);
     refreshBtn.setText("Refresh");
     refreshBtn.addMouseListener(new MouseListener() {
 
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				// TODO
-				System.out.println("morti");
-			}
+      @Override
+      public void mouseClicked(MouseEvent arg0) {
+        mediator.removeUser(curUser);
+        mediator.addUser(curUser, curIP, curPort);
+        mediator.getUsers();
 
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
+        addFiles();
+      }
 
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
+      public void mouseEntered(MouseEvent arg0) {}
+      public void mouseExited(MouseEvent arg0) {}
+      public void mousePressed(MouseEvent arg0) {}
+      public void mouseReleased(MouseEvent arg0) {}
 
-			@Override
-			public void mousePressed(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
-    	
     });
-    
+
     JSplitPane bottomSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, 
-    		statusText, refreshBtn);
+        statusText, refreshBtn);
     bottomSplitPane.setDividerLocation(WIDTH - REF_BTN_WIDTH);
     bottomSplitPane.setDividerSize(0);
-    
+
     JSplitPane superSplitPane =
       new JSplitPane(JSplitPane.VERTICAL_SPLIT, horizontalSplitPane, bottomSplitPane);
     superSplitPane.setDividerLocation(HEIGHT - STATUS_HEIGHT);
     superSplitPane.setDividerSize(0);
-    
-    
 
     // Add the split pane to this frame
     getContentPane().add(superSplitPane);
 
     logger.info("Created the GUI.");
+    addFiles();
+  }
 
+  private void addFiles() {
     File uploadFolder = new File(curUser);
     for (File file : uploadFolder.listFiles()) {
       mediator.addCurrentFile(file);
     }
   }
-
   private static void createAndShowGUI() {
     // Create and set up the window.
     frame = new MainWindow();
@@ -170,8 +154,8 @@ public class MainWindow extends JFrame {
       public void windowClosing(WindowEvent e) {
         frame.mediator.removeUser(curUser);
       }
-      public void windowClosed(WindowEvent e) { }
-      public void windowOpened(WindowEvent e) { }
+      public void windowClosed(WindowEvent e) {}
+      public void windowOpened(WindowEvent e) {}
       public void windowDeiconified(WindowEvent e) {}
       public void windowIconified(WindowEvent e) {}
       public void windowActivated(WindowEvent e) {}
