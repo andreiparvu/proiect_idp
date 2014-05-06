@@ -1,10 +1,13 @@
 package main;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.IOException;
 
 import javax.swing.DefaultListModel;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
@@ -29,7 +32,8 @@ public class MainWindow extends JFrame {
   private static final int WIDTH = 640;
   private static final int HEIGHT = 480;
   private static final int STATUS_HEIGHT = 60;
-
+  private static final int REF_BTN_WIDTH = 160;
+  
   private static final String LOGS_DIR = "logs";
   
   private JList<String> fileList;
@@ -85,16 +89,59 @@ public class MainWindow extends JFrame {
     JSplitPane horizontalSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, splitPane,
         userScrollPane);
     horizontalSplitPane.setOneTouchExpandable(true);
-    horizontalSplitPane.setDividerLocation(WIDTH * 3/4);
-
+    horizontalSplitPane.setDividerLocation(WIDTH - REF_BTN_WIDTH);
 
     JTextArea statusText = new JTextArea();
     mediator.registerStatusArea(statusText);
+    
+    JButton refreshBtn = new JButton();
+    refreshBtn.setSize(REF_BTN_WIDTH, STATUS_HEIGHT);
+    refreshBtn.setText("Refresh");
+    refreshBtn.addMouseListener(new MouseListener() {
 
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				// TODO
+				System.out.println("morti");
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseExited(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+    	
+    });
+    
+    JSplitPane bottomSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, 
+    		statusText, refreshBtn);
+    bottomSplitPane.setDividerLocation(WIDTH - REF_BTN_WIDTH);
+    bottomSplitPane.setDividerSize(0);
+    
     JSplitPane superSplitPane =
-      new JSplitPane(JSplitPane.VERTICAL_SPLIT, horizontalSplitPane, statusText);
+      new JSplitPane(JSplitPane.VERTICAL_SPLIT, horizontalSplitPane, bottomSplitPane);
     superSplitPane.setDividerLocation(HEIGHT - STATUS_HEIGHT);
     superSplitPane.setDividerSize(0);
+    
+    
 
     // Add the split pane to this frame
     getContentPane().add(superSplitPane);
