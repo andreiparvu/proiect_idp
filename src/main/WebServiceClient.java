@@ -91,6 +91,7 @@ public class WebServiceClient {
 
     this.med.setUsers(allUsers);
   }
+
   public ArrayList<String> getFilesFromUser(String userName) {
     ArrayList<String> files = new ArrayList<>();
 

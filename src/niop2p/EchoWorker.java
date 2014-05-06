@@ -6,8 +6,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import main.MainWindow;
 import main.Mediator;
+import main.Network;
 
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
 import org.yaml.snakeyaml.Yaml;
 
 public class EchoWorker implements IWorker {
@@ -17,9 +22,18 @@ public class EchoWorker implements IWorker {
 	private NioServer master;
 	private Mediator med;
 	
+	static Logger logger = Logger.getLogger(Network.class);
+  static {
+    logger.addAppender(new ConsoleAppender(new PatternLayout()));
+  }
+
 	// at construction phase
 	public EchoWorker(Mediator med) {
 		this.med = med;
+		
+		if (MainWindow.appender != null) {
+      logger.addAppender(MainWindow.appender);
+    }
 	}
 	
 	public void processData(NioServer server, SocketChannel socket, byte[] data, int count) {
@@ -147,7 +161,7 @@ public class EchoWorker implements IWorker {
 			InetSocketAddress sockAddress = ((InetSocketAddress)event.socket.getRemoteAddress());
 			String ip = sockAddress.getHostString();
 			int port = message.port;
-			System.out.println("being requested by " + port);
+			logger.info("being requested by " + port);
 			med.startUpload(ip, port, message.filename);
 		} catch (Exception e) {
 			e.printStackTrace();

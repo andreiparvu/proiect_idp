@@ -89,9 +89,13 @@ public class Mediator {
     this.webServiceClient.removeUser(user);
   }
 
-  public void showFiles(String userName) {
-    this.webServiceClient.getUsers();
+  public void refreshUser() {
+  	if (this.userList.selectedUser != null) {
+  		showFiles(this.userList.selectedUser);
+  	}
+  }
 
+  public void showFiles(String userName) {
     ArrayList<String> files = this.webServiceClient.getFilesFromUser(userName);
 
     fileList.removeElements();

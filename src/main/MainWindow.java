@@ -106,6 +106,8 @@ public class MainWindow extends JFrame {
         mediator.getUsers();
 
         addFiles();
+
+        mediator.refreshUser();
       }
 
       public void mouseEntered(MouseEvent arg0) {}
@@ -184,7 +186,7 @@ public class MainWindow extends JFrame {
     javax.swing.SwingUtilities.invokeLater(new Runnable() {
       public void run() {
         createAndShowGUI();
-        System.out.println("Current user: " + curUser);
+        logger.info("Current user: " + curUser);
       }
     });
   }

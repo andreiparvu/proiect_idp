@@ -85,7 +85,7 @@ public class FileData {
   }
 
   public File newFile() {
-  	System.out.println("creating new file " + path + "/" + fd.filename);
+  	logger.info("creating new file " + path + "/" + fd.filename);
   	return new File (path + "/" + fd.filename);
   }
 }
