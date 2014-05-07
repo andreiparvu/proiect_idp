@@ -161,7 +161,6 @@ public class EchoWorker implements IWorker {
 			InetSocketAddress sockAddress = ((InetSocketAddress)event.socket.getRemoteAddress());
 			String ip = sockAddress.getHostString();
 			int port = message.port;
-			logger.info("being requested by " + port);
 			med.startUpload(ip, port, message.filename);
 		} catch (Exception e) {
 			e.printStackTrace();

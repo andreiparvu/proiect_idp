@@ -55,9 +55,9 @@ public class Network {
     pool.execute(new Runnable() {
       public void run() {
         try {
-          client.retrieveFile(InetAddress.getByName(ip), port, med.getDownloadPath(), file);
+          File newFile = client.retrieveFile(InetAddress.getByName(ip), port, med.getDownloadPath(), file);
           logger.info(file + " download successful");
-
+          med.addCurrentFile(newFile);
         } catch (Exception ex) {
           logger.error("Error in downloading file " + file);
           ex.printStackTrace();
