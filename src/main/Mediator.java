@@ -65,6 +65,7 @@ public class Mediator {
   }
 
   public void setUsers(ArrayList<String> userNames) {
+    // Add the logged-in users to the GUI
     this.userList.removeElements();
 
     for (String userName : userNames) {
@@ -73,11 +74,13 @@ public class Mediator {
   }
 
   public void addCurrentFile(File file) {
+    // Add file to upload list
     network.publishFile(file);
     webServiceClient.publishFile(file);
   }
 
   public void addUser(String user, String ip, int port) {
+    // Add user to the logged-in list
     this.webServiceClient.addUser(user, ip, port);
   }
 
@@ -90,9 +93,10 @@ public class Mediator {
   }
 
   public void refreshUser() {
-  	if (this.userList.selectedUser != null) {
-  		showFiles(this.userList.selectedUser);
-  	}
+    // Get the files of the current selected user
+    if (this.userList.selectedUser != null) {
+      showFiles(this.userList.selectedUser);
+    }
   }
 
   public void showFiles(String userName) {
@@ -142,6 +146,7 @@ public class Mediator {
   }
 
   public void addFilePart(String filename, float quantity) {
+    // Add file part to the progress bar
     if (eventTable != null) {
       eventTable.updateProgressBar(filename, quantity);
     }

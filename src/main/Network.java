@@ -41,6 +41,7 @@ public class Network {
   }
 
   public void publishFile(File file) {
+    // Mark file for upload
     logger.info("Publishing " + file.getName());
     try {
       client.publishFile(file);
@@ -52,10 +53,12 @@ public class Network {
 
   public void startDownload(final String ip, final int port, final String file) {
     logger.info("Starting download for " + file);
+    // Start the download in a new thread
     pool.execute(new Runnable() {
       public void run() {
         try {
-          File newFile = client.retrieveFile(InetAddress.getByName(ip), port, med.getDownloadPath(), file);
+          File newFile = client.retrieveFile(InetAddress.getByName(ip), port,
+            med.getDownloadPath(), file);
           logger.info(file + " download successful");
           med.addCurrentFile(newFile);
         } catch (Exception ex) {

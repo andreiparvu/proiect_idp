@@ -26,8 +26,8 @@ public class FileList extends DefaultList {
       int index = FileList.this.locationToIndex(e.getPoint());
 
       if (index < 0)
-      	return;
-      
+        return;
+
       selectedFile = model.elementAt(index);
       // A file has been selected - start download
       med.startDownload();

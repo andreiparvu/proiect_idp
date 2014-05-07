@@ -94,6 +94,8 @@ public class MainWindow extends JFrame {
     JTextArea statusText = new JTextArea();
     mediator.registerStatusArea(statusText);
 
+    // Refresh button which updates the list of files to be uploaded and
+    // current logged in users
     JButton refreshBtn = new JButton();
     refreshBtn.setSize(REF_BTN_WIDTH, STATUS_HEIGHT);
     refreshBtn.setText("Refresh");
@@ -101,6 +103,7 @@ public class MainWindow extends JFrame {
 
       @Override
       public void mouseClicked(MouseEvent arg0) {
+        // do refresh
         mediator.removeUser(curUser);
         mediator.addUser(curUser, curIP, curPort);
         mediator.getUsers();
@@ -146,7 +149,6 @@ public class MainWindow extends JFrame {
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
     // Display the window.
-    // @Daniel: pack BEFORE setSize!
     frame.pack();
     frame.setSize(WIDTH, HEIGHT);
     frame.setVisible(true);
@@ -154,6 +156,7 @@ public class MainWindow extends JFrame {
     frame.addWindowListener(new WindowListener() {
       public void windowDeactivated(WindowEvent e) {}
       public void windowClosing(WindowEvent e) {
+        // window closed - must remove user
         frame.mediator.removeUser(curUser);
       }
       public void windowClosed(WindowEvent e) {}
@@ -170,6 +173,7 @@ public class MainWindow extends JFrame {
     curPort = Integer.parseInt(args[2]);
 
     try {
+      // Add the files in the current user's directory to the upload list
       File logFile = new File(LOGS_DIR + "/" + curUser + ".log");
       if (!logFile.exists()) {
         logFile.createNewFile();

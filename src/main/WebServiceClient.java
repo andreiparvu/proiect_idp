@@ -34,11 +34,8 @@ public class WebServiceClient {
     logger.info("WebServiceClient created and registered.");
   }
 
-  public void addUser(String user, String ip, int port) {
-    connect("addUser?user=" + user + "&ip=" + ip + "&port=" + port);
-  }
-
   private String connect(String uri) {
+    // Connect to the webservice with the given uri
     try {
       URL url = new URL(BASE_URL + uri);
       HttpURLConnection connection = (HttpURLConnection)url.openConnection();
@@ -46,8 +43,10 @@ public class WebServiceClient {
 
       connection.connect();
 
+      // get result from webservice
       InputStreamReader reader = new InputStreamReader(connection.getInputStream());
 
+      // parse the input and return it
       String rez = "";
       while (true) {
         char[] buf = new char[100];
@@ -67,6 +66,10 @@ public class WebServiceClient {
     return null;
   }
 
+  public void addUser(String user, String ip, int port) {
+    connect("addUser?user=" + user + "&ip=" + ip + "&port=" + port);
+  }
+
   public void removeUser(String user) {
     connect("removeUser?user=" + user);
   }
@@ -76,6 +79,7 @@ public class WebServiceClient {
 
     String rez = connect("/getUserList");
 
+    // parse the user list with the given delimiters
     StringTokenizer st = new StringTokenizer(rez, "\n");
 
     for (; st.hasMoreTokens(); ) {
@@ -97,6 +101,7 @@ public class WebServiceClient {
 
     String rez = connect("getFileList?user=" + userName);
 
+    // parse the file list with the given delimiter
     StringTokenizer st = new StringTokenizer(rez, "|");
     for (; st.hasMoreTokens(); ) {
       files.add(st.nextToken());
@@ -116,6 +121,7 @@ public class WebServiceClient {
   }
 
   public String getUser(String ip, int port) {
+    // Get the user with the given ip and port
     int count = 0;
     String correctUser = null;
 
