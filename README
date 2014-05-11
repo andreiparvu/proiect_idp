@@ -32,12 +32,26 @@ CodeInChains (Andrei Parvu & Daniel Ciocirlan, 341C3)
 	Am adaugat logging pentru useri: fiecare user are fisierul de log special in care se tin informatii despre toate operatiile (cerere de lista de fisiere, bucati de fisiere primite etc.)
 
 
+	---- Tema 3:
+	
+	Am adaugat suport pentru web service.
+	
+	Web service-ul 
+		- este in alt proiect, dar pe acelasi repo in alt branch (tema3)
+		- ruleaza peste Tomcat 7 si are o suita de servlet-uri pentru fiecare operatie care ajuta la gestiunea datelor
+		- are un singleton-mediator care tine toate datele despre useri, iar servlet-urile opereaza cu el
+	
+	La aplicatia principala, am facut (in mare) urmatoarele modificari:
+		- am creat un WebServiceClient non-mock, care are rolul de a dialoga cu web service-ul, si de a lua/publica date
+		- am adaugat un buton de refresh, pentru a face sincronizare intre starea aplicatiei si starea web service-ului, din punctul de vedere al datelor
+		- la descarcarea unui fisier, clientul publica automat numele fisierului descarcat la server
+		- am facut modificari astfel incat fiecare user sa descarce fisierele in folderul propriu
+		
 2. Rulare
 	
-	Proiectul are un fisier build.xml care ii permite rularea in consola cu ant.
 	Recomandam importarea proiectului in Eclipse.
 
-	Aplicatia necesita 3 parametri in linia de comanda: user, ip si port. Momentan functioneaza pentru 2 useri cu informatiile hardcodate:
+	Aplicatia necesita 3 parametri in linia de comanda - user, ip si port - dupa care va publica automat fisierele din folderul propriu al userului 
 
 	- andrei,127.0.0.1,8000
 	- daniel,127.0.0.1,9000
